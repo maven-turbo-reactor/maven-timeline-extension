@@ -185,7 +185,8 @@ public final class BuildData {
         private final BigDecimal heapUsed;
         private final BigDecimal heapCommitted;
         private final boolean gc;
-        private final BigDecimal cpu;
+        private final BigDecimal processCpu;
+        private final BigDecimal systemCpu;
         private final int threads;
         private final BigDecimal disk;
 
@@ -196,7 +197,8 @@ public final class BuildData {
             @JsonProperty("heapUsed") BigDecimal heapUsed,
             @JsonProperty("heapCommitted") BigDecimal heapCommitted,
             @JsonProperty("gc") boolean gc,
-            @JsonProperty("cpu") BigDecimal cpu,
+            @JsonProperty("processCpu") BigDecimal processCpu,
+            @JsonProperty("systemCpu") BigDecimal systemCpu,
             @JsonProperty("threads") int threads,
             @JsonProperty("disk") BigDecimal disk
         ) {
@@ -205,7 +207,8 @@ public final class BuildData {
             this.heapUsed = heapUsed;
             this.heapCommitted = heapCommitted;
             this.gc = gc;
-            this.cpu = cpu;
+            this.processCpu = processCpu;
+            this.systemCpu = systemCpu;
             this.threads = threads;
             this.disk = disk;
         }
@@ -230,8 +233,12 @@ public final class BuildData {
             return gc;
         }
 
-        public BigDecimal getCpu() {
-            return cpu;
+        public BigDecimal getProcessCpu() {
+            return processCpu;
+        }
+
+        public BigDecimal getSystemCpu() {
+            return systemCpu;
         }
 
         public int getThreads() {

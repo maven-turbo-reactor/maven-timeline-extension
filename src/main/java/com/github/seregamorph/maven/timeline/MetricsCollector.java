@@ -63,17 +63,18 @@ public class MetricsCollector {
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
         long heapCommittedBytes = memoryMXBean.getHeapMemoryUsage().getCommitted();
-        // recent CPU usage of this JVM process as a fraction [0.0, 1.0];
-        // returns a negative value when not yet available (e.g. first sample)
+        // recent CPU usage as a fraction [0.0, 1.0]; both return a negative
+        // value when not yet available (e.g. first sample)
         double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
-        double cpuPercent = processCpuLoad < 0 ? 0d : processCpuLoad * 100d;
+        double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
         return new BuildData.Metric(
             fromStart(Instant.now()),
             activeTasks.get(),
             megabytes(heapUsedBytes),
             megabytes(heapCommittedBytes),
             false,
-            BigDecimal.valueOf(cpuPercent).setScale(3, RoundingMode.HALF_UP),
+            cpuPercent(processCpuLoad),
+            cpuPercent(systemCpuLoad),
             threads + daemonThreads,
             BigDecimal.ZERO
         );
@@ -97,6 +98,11 @@ public class MetricsCollector {
 
     private static BigDecimal megabytes(long bytes) {
         return BigDecimal.valueOf(bytes / 1024 / 1024);
+    }
+
+    private static BigDecimal cpuPercent(double cpuLoad) {
+        double percent = cpuLoad < 0 ? 0d : cpuLoad * 100d;
+        return BigDecimal.valueOf(percent).setScale(3, RoundingMode.HALF_UP);
     }
 
     public void start() {

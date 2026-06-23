@@ -333,7 +333,8 @@ function buildAll(){
   charts.push(buildMetric("disk",{height:64,unit:" MB/s",series:[
     {key:"disk",label:"disk I/O",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4}]}));
   charts.push(buildMetric("cpu",{height:64,unit:"%",yMax:100,series:[
-    {key:"cpu",label:"CPU",color:"#444b53",fill:"#6b7480",fillOpacity:0.5}]}));
+    {key:"systemCpu",label:"system",color:"#a0863a",fill:"#d8b85a",fillOpacity:0.35},
+    {key:"processCpu",label:"process",color:"#444b53",fill:"#6b7480",fillOpacity:0.5}]}));
   charts.forEach(c=>c.draw());
   buildNavigator();
 }
