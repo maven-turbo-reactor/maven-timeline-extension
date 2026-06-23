@@ -1,0 +1,2 @@
+com.github.seregamorph.maven.timeline.TimelineLifecycleParticipant
+com.github.seregamorph.maven.timeline.TimelineMojoExecutionListener

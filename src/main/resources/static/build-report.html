@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maven Build Timeline Report — D3 demo</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<style>
+  :root {
+    --ink: #1f2933; --muted: #7b8794; --grid: #eceff1; --border: #e0e4e8;
+    --accent: #2f6fed; --crosshair: #d23f3f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #f5f6f8; color: var(--ink);
+    font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 10px 26px 14px; }
+  header.report-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 2px; }
+  header.report-head h1 { font-size: 18px; font-weight: 600; margin: 0; }
+  header.report-head .sub { color: var(--muted); font-size: 12px; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; flex-wrap: wrap; }
+  .toolbar button { border: 1px solid var(--border); background: #fff; color: var(--ink);
+    padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .toolbar .hint { color: var(--muted); font-size: 12px; }
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04); margin-bottom: 6px; overflow: hidden; }
+  .panel .panel-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; padding: 4px 12px 0; }
+  svg { display: block; width: 100%; }
+  .axis path, .axis line { stroke: var(--grid); }
+  .axis text { fill: var(--muted); font-size: 11px; }
+  .grid line { stroke: var(--grid); }
+  .grid path { stroke: none; }
+  .lane.alt { fill: #f2f4f7; }
+  .lane { fill: #fafbfc; }
+  .lane-label { fill: var(--muted); font-size: 11px; }
+  .task rect { rx: 2; cursor: pointer; }
+  .task rect:hover { stroke: #1f2933; stroke-width: 1.5; }
+  .task text { font-size: 10px; fill: #fff; pointer-events: none; }
+  .crosshair { stroke: var(--crosshair); stroke-width: 1; stroke-dasharray: 3 2; pointer-events: none; opacity: 0; }
+  .zoom-overlay { fill: none; pointer-events: all; cursor: crosshair; }
+  .nav-area { fill: #cfd6df; }
+  .brush .selection { fill: rgba(47,111,237,.16); stroke: var(--accent); shape-rendering: crispEdges; }
+  .brush .handle { fill: var(--accent); }
+  .brush .overlay { cursor: pointer; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 2px 12px 4px; color: var(--muted); font-size: 11px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+  .tip { position: fixed; pointer-events: none; z-index: 50; opacity: 0; background: #1f2933; color: #fff;
+    padding: 7px 9px; border-radius: 6px; font-size: 12px; max-width: 320px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25); transition: opacity .08s; }
+  .tip b { color: #ffd479; } .tip .row { color: #cbd2d9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="report-head">
+    <h1 id="headline">Build timeline</h1>
+    <span class="sub" id="subline"></span>
+  </header>
+  <div class="toolbar">
+    <button id="resetZoom">Reset zoom</button>
+    <span class="hint">Scroll / pinch to zoom · drag to pan · all charts stay aligned · double-click to reset</span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Execution — worker threads</div>
+    <div id="legend" class="legend"></div>
+    <div id="gantt"></div>
+  </div>
+  <div class="panel"><div class="panel-title">Heap memory (used / committed)</div><div id="heap"></div></div>
+  <div class="panel"><div class="panel-title">Live threads</div><div id="threads"></div></div>
+  <div class="panel"><div class="panel-title">Disk I/O (MB/s)</div><div id="disk"></div></div>
+  <div class="panel"><div class="panel-title">CPU utilization (%)</div><div id="cpu"></div></div>
+  <div class="panel"><div class="panel-title">Navigator — drag to scroll, resize handles to zoom</div><div id="nav"></div></div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+"use strict";
+/* ====================== build data (loaded from build-data.json) ======================
+   The report is now fully static. All numbers come from build-data.json, which is
+   produced by generate-build-data.js (currently a seeded simulation; the real build
+   instrumentation will replace that generator while keeping the same schema). */
+let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0, DATA_LABEL="";
+
+// the timeline atom is a single maven goal; each goal is colored by its phase,
+// with a per-module saturation tweak so goals of the same module read together
+const PHASE_HUE={clean:40,compile:210,testCompile:265,test:12,jar:140,"source:jar":165,install:95};
+const PHASE_KEYS=["clean","compile","testCompile","test","jar","source:jar","install"];
+function phaseOf(g){return PHASE_HUE[g]!=null?g:"compile";}
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
+function goalColor(d){const k=phaseOf(d.goal);const sat=46+(Math.abs(hashStr(d.module))%16);
+  return d3.hsl(PHASE_HUE[k],sat/100,0.52).toString();}
+
+/* ====================== layout / shared scale ====================== */
+const fmtTime=s=>{const m=Math.floor(s/60),sec=s-m*60;return m>0?`${m}m ${sec.toFixed(1)}s`:`${sec.toFixed(1)}s`;};
+// axis labels: drop the trailing ".0" (e.g. "10s" not "10.0s"), keep fractions when present
+const fmtAxis=s=>{const m=Math.floor(s/60),sec=s-m*60;const ss=Number.isInteger(sec)?sec:+sec.toFixed(1);return m>0?`${m}m ${ss}s`:`${ss}s`;};
+
+const M={left:66,right:18,top:8,bottom:18};
+const width = () => document.getElementById("gantt").clientWidth || 1400;
+const x = d3.scaleLinear().domain([T0,T1]);      // base scale; domain set after load, range per render
+let xz = x;                                       // current (zoomed) scale, shared by all charts
+
+const tip=d3.select("#tip");
+function showTip(html,ev){tip.html(html).style("opacity",1);
+  const pad=14,r=tip.node().getBoundingClientRect();
+  let X=ev.clientX+pad,Y=ev.clientY+pad;
+  if(X+r.width>innerWidth)X=ev.clientX-r.width-pad;
+  if(Y+r.height>innerHeight)Y=ev.clientY-r.height-pad;
+  tip.style("left",X+"px").style("top",Y+"px");}
+const hideTip=()=>tip.style("opacity",0);
+
+/* registry of focus charts so a zoom on one re-renders all */
+const charts=[];
+let INNERW=0;                 // shared inner pixel width (same for every chart)
+let current=d3.zoomIdentity;  // single source of truth for the view transform
+let suppress=false;           // re-entrancy guard between zoom <-> brush
+let navMove=null;             // navigator's brush.move setter (set by buildNavigator)
+
+const zoom=d3.zoom().scaleExtent([1,60]).on("zoom",onZoom);
+
+// keep every overlay's internal __zoom in lock-step with the shared transform
+function syncTransform(t){ d3.selectAll("svg .zoom-overlay").property("__zoom", t); }
+
+function onZoom(ev){
+  if(suppress) return;
+  current = ev.transform;
+  syncTransform(current);
+  xz = current.rescaleX(x);
+  charts.forEach(c=>c.draw());
+  if(navMove){ suppress=true; navMove([x(xz.domain()[0]), x(xz.domain()[1])]); suppress=false; }
+}
+
+// drive the view from a pixel selection (used by the navigator brush)
+function setView(s){
+  const k = Math.min(60, INNERW/Math.max(1, s[1]-s[0]));
+  current = d3.zoomIdentity.scale(k).translate(-s[0],0);
+  syncTransform(current);
+  xz = current.rescaleX(x);
+  charts.forEach(c=>c.draw());
+}
+
+function applyZoomBehavior(svg,innerW,innerH){
+  zoom.translateExtent([[0,0],[innerW,innerH]]).extent([[0,0],[innerW,innerH]]);
+  svg.select(".zoom-overlay").call(zoom).property("__zoom", current);
+}
+function resetZoom(){
+  current=d3.zoomIdentity; syncTransform(current); xz=x;
+  charts.forEach(c=>c.draw());
+  if(navMove){ suppress=true; navMove(x.range()); suppress=false; }
+}
+
+/* shared crosshair */
+function moveCrosshair(tVal){
+  charts.forEach(c=>{
+    const px=xz(tVal);
+    const vis = tVal!=null && px>=0 && px<=c.innerW;
+    c.crosshair.attr("x1",px).attr("x2",px).style("opacity",vis?1:0);
+  });
+}
+
+/* ====================== Gantt swimlanes ====================== */
+function buildGantt(){
+  const W=width(), LANE_H=24, GAP=3;
+  const innerW=W-M.left-M.right, innerH=N_THREADS*(LANE_H+GAP);
+  const H=innerH+M.top+M.bottom;
+  INNERW=innerW; x.range([0,innerW]);
+  const svg=d3.select("#gantt").html("").append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
+  const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
+
+  const lanes=g.append("g");
+  const grid=g.append("g").attr("class","grid");
+  const xAxisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
+  const labels=g.append("g");
+  const bars=g.append("g").attr("clip-path","url(#clipG)");
+  svg.append("defs").append("clipPath").attr("id","clipG")
+    .append("rect").attr("width",innerW).attr("height",innerH);
+
+  // static lane backgrounds + labels
+  d3.range(N_THREADS).forEach(i=>{
+    lanes.append("rect").attr("class","lane"+(i%2?" alt":"")).attr("x",0)
+      .attr("y",i*(LANE_H+GAP)).attr("width",innerW).attr("height",LANE_H);
+    labels.append("text").attr("class","lane-label").attr("x",-8)
+      .attr("y",i*(LANE_H+GAP)+LANE_H/2+4).attr("text-anchor","end").text("worker-"+(i+1));
+  });
+
+  const crosshair=g.append("line").attr("class","crosshair").attr("y1",0).attr("y2",innerH);
+  g.append("rect").attr("class","zoom-overlay").attr("width",innerW).attr("height",innerH);
+
+  function draw(){
+    const xAxis=d3.axisBottom(xz).ticks(10).tickFormat(fmtAxis);
+    xAxisG.call(xAxis);
+    grid.call(d3.axisBottom(xz).ticks(10).tickSize(innerH).tickFormat(""))
+      .attr("transform",`translate(0,0)`).selectAll("text").remove();
+
+    const sel=bars.selectAll("g.task").data(
+      goals.filter(d=>d.end>=xz.domain()[0]&&d.start<=xz.domain()[1]),
+      d=>d.uid);
+    sel.exit().remove();
+    const ent=sel.enter().append("g").attr("class","task");
+    ent.append("rect");
+    ent.append("text");
+    const merged=ent.merge(sel);
+    merged.select("rect")
+      .attr("x",d=>Math.max(0,xz(d.start)))
+      .attr("y",d=>d.thread*(LANE_H+GAP)+2)
+      .attr("width",d=>Math.max(1,Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start))))
+      .attr("height",LANE_H-4).attr("fill",d=>goalColor(d));
+    merged.select("text")
+      .attr("x",d=>Math.max(0,xz(d.start))+5)
+      .attr("y",d=>d.thread*(LANE_H+GAP)+LANE_H/2+3.5)
+      .text(d=>{const w=Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start));
+        if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.goal;});
+  }
+
+  svg.select(".zoom-overlay")
+    .on("pointermove.cross",ev=>{
+      const [px,py]=d3.pointer(ev);
+      moveCrosshair(xz.invert(px));
+      // hit-test the goal rectangle under the cursor (the overlay sits above the bars)
+      const lane=Math.floor(py/(LANE_H+GAP)), tm=xz.invert(px);
+      const hit=(lane>=0&&lane<N_THREADS)?goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm):null;
+      if(hit) showTip(
+        `<b>${hit.module} <span style="color:#cbd2d9">:</span> ${hit.goal}</b>`+
+        `<br><span class="row">worker-${hit.thread+1}</span>`+
+        `<br><span class="row">start: <b>${fmtTime(hit.start)}</b></span>`+
+        `<br><span class="row">goal time: <b>${hit.dur.toFixed(2)}s</b></span>`,ev);
+      else hideTip();
+    })
+    .on("pointerleave.cross",()=>{moveCrosshair(null);hideTip();});
+  applyZoomBehavior(svg,innerW,innerH);
+  return {draw,crosshair,innerW};
+}
+
+/* ====================== metric chart ====================== */
+function buildMetric(id,opts){
+  const W=width(), H=opts.height, innerW=W-M.left-M.right, innerH=H-M.top-M.bottom;
+  const svg=d3.select("#"+id).html("").append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
+  const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
+  const yMax=opts.yMax ?? d3.max(opts.series.flatMap(s=>metrics.map(m=>m[s.key])))*1.1;
+  const y=d3.scaleLinear().domain([0,yMax]).range([innerH,0]).nice();
+
+  g.append("g").attr("class","grid")
+    .call(d3.axisLeft(y).ticks(2).tickSize(-innerW).tickFormat("")).select(".domain").remove();
+  const yAxis=g.append("g").attr("class","axis")
+    .call(d3.axisLeft(y).ticks(2).tickFormat(v=>(opts.fmtY?opts.fmtY(v):v)+(opts.unit||"")));
+  const xAxisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
+
+  const clipId="clip_"+id;
+  svg.append("defs").append("clipPath").attr("id",clipId).append("rect").attr("width",innerW).attr("height",innerH);
+  const plot=g.append("g").attr("clip-path",`url(#${clipId})`);
+  const gcLayer=plot.append("g");
+  const paths=opts.series.map(s=>plot.append("path")
+    .attr("fill",s.fill||s.color).attr("fill-opacity",s.fillOpacity??0.4)
+    .attr("stroke",s.color).attr("stroke-width",1.4));
+
+  const crosshair=g.append("line").attr("class","crosshair").attr("y1",0).attr("y2",innerH);
+  g.append("rect").attr("class","zoom-overlay").attr("width",innerW).attr("height",innerH);
+
+  const bisect=d3.bisector(m=>m.t).center;
+  function draw(){
+    xAxisG.call(d3.axisBottom(xz).ticks(10).tickFormat(fmtAxis));
+    opts.series.forEach((s,i)=>{
+      const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(m[s.key]));
+      paths[i].attr("d",area(metrics));
+    });
+    if(opts.gcMarkers){
+      const gcs=gcLayer.selectAll("line").data(metrics.filter(m=>m.gc));
+      gcs.exit().remove();
+      gcs.enter().append("line").attr("y1",0).attr("y2",innerH)
+        .attr("stroke","#9aa5b1").attr("stroke-width",1).attr("stroke-dasharray","2 3").attr("opacity",0.6)
+        .merge(gcs).attr("x1",m=>xz(m.t)).attr("x2",m=>xz(m.t));
+    }
+  }
+
+  svg.select(".zoom-overlay")
+    .on("pointermove.cross",ev=>{
+      const px=d3.pointer(ev)[0], tVal=xz.invert(px);
+      moveCrosshair(tVal);
+      const m=metrics[Math.max(0,Math.min(metrics.length-1,bisect(metrics,tVal)))];
+      let rows=`<b>t = ${fmtTime(m.t)}</b>`;
+      opts.series.forEach(s=>rows+=`<br><span class="row">${s.label}: <b>${(opts.fmtY?opts.fmtY(m[s.key]):Math.round(m[s.key]))}${opts.unit||""}</b></span>`);
+      if(m.gc&&opts.gcMarkers)rows+=`<br><span class="row" style="color:#ffd479">⟳ GC pause</span>`;
+      showTip(rows,ev);
+    })
+    .on("pointerleave.cross",()=>{moveCrosshair(null);hideTip();});
+  applyZoomBehavior(svg,innerW,innerH);
+  return {draw,crosshair,innerW};
+}
+
+/* ====================== navigator (scroll / context brush) ====================== */
+function buildNavigator(){
+  const W=width(), H=42, innerW=W-M.left-M.right, innerH=H-M.top-M.bottom;
+  const svg=d3.select("#nav").html("").append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
+  const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
+
+  // faint context: active-task count across the whole build, so the scrollbar has visual reference
+  const yMax=d3.max(metrics,m=>m.active)||1;
+  const y=d3.scaleLinear().domain([0,yMax]).range([innerH,0]);
+  const area=d3.area().x(m=>x(m.t)).y0(innerH).y1(m=>y(m.active));
+  g.append("path").attr("class","nav-area").attr("d",area(metrics)).attr("fill-opacity",0.7);
+  g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`)
+    .call(d3.axisBottom(x).ticks(10).tickFormat(fmtAxis));
+
+  const brush=d3.brushX().extent([[0,0],[innerW,innerH]]).on("brush end",ev=>{
+    if(suppress) return;
+    if(ev.selection){ setView(ev.selection); return; }
+    if(ev.type==="end"){ setView(x.range()); suppress=true; navMove(x.range()); suppress=false; }
+  });
+  const brushG=g.append("g").attr("class","brush").call(brush);
+  // expose a setter the zoom handler can call to keep the window in sync
+  navMove = sel => brushG.call(brush.move, sel);
+  navMove(x.range());   // start fully zoomed-out
+}
+
+/* ====================== legend ====================== */
+const legend=d3.select("#legend");
+PHASE_KEYS.forEach(k=>{
+  legend.append("span").html(`<i style="background:hsl(${PHASE_HUE[k]} 52% 52%)"></i>${k}`);
+});
+
+/* ====================== build & wire ====================== */
+function buildAll(){
+  charts.length=0; current=d3.zoomIdentity; xz=x; navMove=null;
+  charts.push(buildGantt());
+  charts.push(buildMetric("heap",{height:74,unit:" MB",gcMarkers:true,fmtY:Math.round,series:[
+    {key:"heapCommitted",label:"committed",color:"#c0c7d1",fill:"#c0c7d1",fillOpacity:0.5},
+    {key:"heapUsed",label:"used",color:"#b54a3a",fill:"#c46352",fillOpacity:0.55}]}));
+  charts.push(buildMetric("threads",{height:64,series:[
+    {key:"threads",label:"live threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.4}]}));
+  charts.push(buildMetric("disk",{height:64,unit:" MB/s",series:[
+    {key:"disk",label:"disk I/O",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4}]}));
+  charts.push(buildMetric("cpu",{height:64,unit:"%",yMax:100,series:[
+    {key:"cpu",label:"CPU",color:"#444b53",fill:"#6b7480",fillOpacity:0.5}]}));
+  charts.forEach(c=>c.draw());
+  buildNavigator();
+}
+d3.select("#resetZoom").on("click",resetZoom);
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{xz=x;buildAll();},150);});
+
+/* ====================== load data & render ====================== */
+function ingest(data){
+  tasks   = data.tasks || [];
+  metrics = data.metrics || [];
+  // flatten modules into the per-goal atoms the timeline renders
+  goals = [];
+  tasks.forEach(t=>(t.goals||[]).forEach((g,i)=>{
+    goals.push({uid:t.module+"#"+i, module:t.module, thread:t.thread,
+      goal:g.name, start:g.start, end:g.end, dur:g.dur});
+  }));
+  const meta = data.meta || {};
+  N_THREADS  = meta.threads ?? d3.max(tasks,t=>t.thread)+1 ?? 1;
+  T0 = 0;
+  T1 = meta.duration ?? d3.max(metrics,m=>m.t) ?? d3.max(tasks,t=>t.end) ?? 1;
+  totalGoals = meta.totalGoals ?? goals.length;
+  x.domain([T0,T1]);
+  d3.select("#headline").text(`${totalGoals} goals executed in ${tasks.length} modules in ${fmtTime(T1)}`);
+  d3.select("#subline").text(`${N_THREADS} worker threads · D3 v7 · loaded from build-data.json`);
+  buildAll();
+}
+
+d3.json("build-data.json")
+  .then(ingest)
+  .catch(err=>{
+    d3.select("#headline").text("Could not load build-data.json");
+    d3.select("#subline").html(
+      `Run <code>node generate-build-data.js</code>, then serve over HTTP `+
+      `(e.g. <code>python3 -m http.server</code>) — browsers block fetch() on file:// URLs. `+
+      `<span style="color:#b54a3a">${err}</span>`);
+    console.error(err);
+  });
+</script>
+</body>
+</html>
