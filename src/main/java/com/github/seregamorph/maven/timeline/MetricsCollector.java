@@ -1,9 +1,11 @@
 package com.github.seregamorph.maven.timeline;
 
+import com.sun.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.ThreadMXBean;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,8 +21,15 @@ public class MetricsCollector {
 
     private final AtomicInteger activeTasks = new AtomicInteger(0);
     private final List<BuildData.Metric> metrics = new ArrayList<>();
+
+    /*
+    TODO
+    getClassLoadingMXBean
+     */
     private final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
     private final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+    private final OperatingSystemMXBean operatingSystemMXBean =
+        (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     private final Instant startTime;
     private final Thread worker;
@@ -54,13 +63,17 @@ public class MetricsCollector {
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
         long heapCommittedBytes = memoryMXBean.getHeapMemoryUsage().getCommitted();
+        // recent CPU usage of this JVM process as a fraction [0.0, 1.0];
+        // returns a negative value when not yet available (e.g. first sample)
+        double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
+        double cpuPercent = processCpuLoad < 0 ? 0d : processCpuLoad * 100d;
         return new BuildData.Metric(
             fromStart(Instant.now()),
             activeTasks.get(),
             megabytes(heapUsedBytes),
             megabytes(heapCommittedBytes),
             false,
-            BigDecimal.ZERO,
+            BigDecimal.valueOf(cpuPercent).setScale(3, RoundingMode.HALF_UP),
             threads + daemonThreads,
             BigDecimal.ZERO
         );
