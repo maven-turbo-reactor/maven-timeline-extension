@@ -70,7 +70,7 @@
   </div>
   <div class="panel"><div class="panel-title">Heap memory (used / committed)</div><div id="heap"></div></div>
   <div class="panel"><div class="panel-title">Live threads</div><div id="threads"></div></div>
-  <div class="panel"><div class="panel-title">Disk I/O (MB/s)</div><div id="disk"></div></div>
+  <div class="panel"><div class="panel-title">Resolver I/O (MB/s)</div><div id="resolverIo"></div></div>
   <div class="panel"><div class="panel-title">CPU utilization (%)</div><div id="cpu"></div></div>
   <div class="panel"><div class="panel-title">Navigator — drag to scroll, resize handles to zoom</div><div id="nav"></div></div>
 </div>
@@ -330,8 +330,9 @@ function buildAll(){
     {key:"heapUsed",label:"used",color:"#b54a3a",fill:"#c46352",fillOpacity:0.55}]}));
   charts.push(buildMetric("threads",{height:64,series:[
     {key:"threads",label:"live threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.4}]}));
-  charts.push(buildMetric("disk",{height:64,unit:" MB/s",series:[
-    {key:"disk",label:"disk I/O",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4}]}));
+  charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2),series:[
+    {key:"resolverDownload",label:"download",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4},
+    {key:"resolverUpload",label:"upload",color:"#b07cc6",fill:"#c79ad8",fillOpacity:0.4}]}));
   charts.push(buildMetric("cpu",{height:64,unit:"%",yMax:100,series:[
     {key:"systemCpu",label:"system",color:"#a0863a",fill:"#d8b85a",fillOpacity:0.35},
     {key:"processCpu",label:"process",color:"#444b53",fill:"#6b7480",fillOpacity:0.5}]}));

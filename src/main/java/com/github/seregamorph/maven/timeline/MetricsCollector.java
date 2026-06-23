@@ -33,6 +33,8 @@ public class MetricsCollector {
     private final OperatingSystemMXBean operatingSystemMXBean =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
+    private final ResolverIoStats resolverIoStats;
+
     private final Instant startTime;
     private final Thread worker;
 
@@ -42,8 +44,16 @@ public class MetricsCollector {
     // @GuardedBy("metrics")
     private Long gcCount = null;
 
-    public MetricsCollector(Instant startTime) {
+    // @GuardedBy("metrics")
+    private Instant lastSampleTime = null;
+    // @GuardedBy("metrics")
+    private long lastDownloadedBytes = 0L;
+    // @GuardedBy("metrics")
+    private long lastUploadedBytes = 0L;
+
+    public MetricsCollector(ResolverIoStats resolverIoStats, Instant startTime) {
         this.startTime = startTime;
+        this.resolverIoStats = resolverIoStats;
         // first metric
         BuildData.Metric firstMetric;
         synchronized (metrics) {
@@ -68,6 +78,7 @@ public class MetricsCollector {
     }
 
     private BuildData.Metric scrapeMetrics() {
+        Instant now = Instant.now();
         int threads = threadMXBean.getThreadCount();
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
@@ -79,8 +90,18 @@ public class MetricsCollector {
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
+        // resolver I/O rate (MB/s) over the actual elapsed interval since the previous sample
+        long downloadedBytes = resolverIoStats.getDownloadedBytes();
+        long uploadedBytes = resolverIoStats.getUploadedBytes();
+        double elapsedSeconds = lastSampleTime == null
+            ? 0d : Duration.between(lastSampleTime, now).toNanos() / 1_000_000_000d;
+        BigDecimal resolverDownload = megabytesPerSecond(downloadedBytes - lastDownloadedBytes, elapsedSeconds);
+        BigDecimal resolverUpload = megabytesPerSecond(uploadedBytes - lastUploadedBytes, elapsedSeconds);
+        lastSampleTime = now;
+        lastDownloadedBytes = downloadedBytes;
+        lastUploadedBytes = uploadedBytes;
         return new BuildData.Metric(
-            fromStart(Instant.now()),
+            fromStart(now),
             activeTasks.get(),
             megabytes(heapUsedBytes),
             megabytes(heapCommittedBytes),
@@ -88,7 +109,8 @@ public class MetricsCollector {
             cpuPercent(processCpuLoad),
             cpuPercent(systemCpuLoad),
             threads + daemonThreads,
-            BigDecimal.ZERO
+            resolverDownload,
+            resolverUpload
         );
     }
 
@@ -122,6 +144,14 @@ public class MetricsCollector {
 
     private static BigDecimal megabytes(long bytes) {
         return BigDecimal.valueOf(bytes / 1024 / 1024);
+    }
+
+    private static BigDecimal megabytesPerSecond(long deltaBytes, double seconds) {
+        if (deltaBytes <= 0 || seconds <= 0d) {
+            return BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP);
+        }
+        double megabytesPerSecond = deltaBytes / (1024d * 1024d) / seconds;
+        return BigDecimal.valueOf(megabytesPerSecond).setScale(3, RoundingMode.HALF_UP);
     }
 
     private static BigDecimal cpuPercent(double cpuLoad) {

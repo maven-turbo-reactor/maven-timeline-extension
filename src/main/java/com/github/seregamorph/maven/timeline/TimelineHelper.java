@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.MojoExecutionEvent;
@@ -20,12 +21,19 @@ import org.apache.maven.project.MavenProject;
 @Singleton
 public class TimelineHelper {
 
+    private final ResolverIoStats resolverIoStats;
+
     private Instant startTime;
     private int modulesNumber;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
     private Map<Integer, Map<GroupArtifactId, ModuleData>> threadModules;
     private MetricsCollector metricsCollector;
+
+    @Inject
+    public TimelineHelper(ResolverIoStats resolverIoStats) {
+        this.resolverIoStats = resolverIoStats;
+    }
 
     private static class ModuleData {
 
@@ -55,8 +63,10 @@ public class TimelineHelper {
     }
 
     void init(MavenSession session) {
+        resolverIoStats.reset();
+
         startTime = Instant.now();
-        metricsCollector = new MetricsCollector(startTime);
+        metricsCollector = new MetricsCollector(resolverIoStats, startTime);
         modulesNumber = session.getAllProjects().size();
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();

@@ -188,7 +188,8 @@ public final class BuildData {
         private final BigDecimal processCpu;
         private final BigDecimal systemCpu;
         private final int threads;
-        private final BigDecimal disk;
+        private final BigDecimal resolverDownload;
+        private final BigDecimal resolverUpload;
 
         @JsonCreator
         public Metric(
@@ -200,7 +201,8 @@ public final class BuildData {
             @JsonProperty("processCpu") BigDecimal processCpu,
             @JsonProperty("systemCpu") BigDecimal systemCpu,
             @JsonProperty("threads") int threads,
-            @JsonProperty("disk") BigDecimal disk
+            @JsonProperty("resolverDownload") BigDecimal resolverDownload,
+            @JsonProperty("resolverUpload") BigDecimal resolverUpload
         ) {
             this.t = t;
             this.active = active;
@@ -210,7 +212,8 @@ public final class BuildData {
             this.processCpu = processCpu;
             this.systemCpu = systemCpu;
             this.threads = threads;
-            this.disk = disk;
+            this.resolverDownload = resolverDownload;
+            this.resolverUpload = resolverUpload;
         }
 
         public BigDecimal getT() {
@@ -249,8 +252,12 @@ public final class BuildData {
             return threads;
         }
 
-        public BigDecimal getDisk() {
-            return disk;
+        public BigDecimal getResolverDownload() {
+            return resolverDownload;
+        }
+
+        public BigDecimal getResolverUpload() {
+            return resolverUpload;
         }
     }
 
