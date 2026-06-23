@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.MojoExecutionEvent;
+import org.apache.maven.execution.ProjectExecutionEvent;
 import org.apache.maven.project.MavenProject;
 
 /**
@@ -39,14 +40,20 @@ public class TimelineHelper {
 
         private final List<CompleteGoal> completeGoals = new ArrayList<>();
 
+        private final Instant startedProject;
+
         private StartedGoal startedGoal;
+
+        private ModuleData(Instant startedProject) {
+            this.startedProject = startedProject;
+        }
     }
 
     private static class StartedGoal {
-        private final Instant started;
+        private final Instant startedGoal;
 
-        private StartedGoal(Instant started) {
-            this.started = started;
+        private StartedGoal(Instant startedGoal) {
+            this.startedGoal = startedGoal;
         }
     }
 
@@ -76,36 +83,41 @@ public class TimelineHelper {
         metricsCollector.start();
     }
 
-    void onStart(MojoExecutionEvent event) {
+    void onStart(ProjectExecutionEvent event) {
         metricsCollector.incActiveTasks();
-        ModuleData moduleData = getModuleData(event);
+        // initializes ModuleData.startedProject
+        getModuleData(event.getProject());
+    }
+
+    void onStart(MojoExecutionEvent event) {
+        ModuleData moduleData = getModuleData(event.getProject());
+        if (moduleData.completeGoals.isEmpty()) {
+            // add fake "pre-execution" phase
+            moduleData.completeGoals.add(new CompleteGoal("<prepare>", moduleData.startedProject, Instant.now()));
+        }
         moduleData.startedGoal = new StartedGoal(Instant.now());
     }
 
-    void onSuccess(MojoExecutionEvent event) {
-        onComplete(event, true);
-    }
-
-    void onFailure(MojoExecutionEvent event) {
-        onComplete(event, false);
-    }
-
-    private void onComplete(MojoExecutionEvent event, boolean success) {
+    void onComplete(MojoExecutionEvent event, boolean success) {
         // todo distinguish failure
-        metricsCollector.decActiveTasks();
-        ModuleData moduleData = getModuleData(event);
+        ModuleData moduleData = getModuleData(event.getProject());
+
         String goalName = event.getExecution().getGoal();
-        CompleteGoal completeGoal = new CompleteGoal(goalName, moduleData.startedGoal.started, Instant.now());
+        CompleteGoal completeGoal = new CompleteGoal(goalName, moduleData.startedGoal.startedGoal, Instant.now());
         moduleData.completeGoals.add(completeGoal);
         moduleData.startedGoal = null;
     }
 
-    private ModuleData getModuleData(MojoExecutionEvent event) {
+    void onComplete(ProjectExecutionEvent event, boolean success) {
+        metricsCollector.decActiveTasks();
+    }
+
+    private ModuleData getModuleData(MavenProject project) {
         Map<GroupArtifactId, ModuleData> modules = threadModules.computeIfAbsent(currentWorkerThreadId.get(),
             $ -> Collections.synchronizedMap(new LinkedHashMap<>()));
-        GroupArtifactId groupArtifactId = groupArtifactId(event.getProject());
+        GroupArtifactId groupArtifactId = groupArtifactId(project);
         // there should be no contention on moduleData as reactor builds them in a single thread
-        return modules.computeIfAbsent(groupArtifactId, $ -> new ModuleData());
+        return modules.computeIfAbsent(groupArtifactId, $ -> new ModuleData(Instant.now()));
     }
 
     private BigDecimal fromStart(Instant time) {

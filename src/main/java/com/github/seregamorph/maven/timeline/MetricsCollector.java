@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MetricsCollector {
 
-    private static final long CYCLE_INTERVAL_MS = 500L;
+    private static final long CYCLE_INTERVAL_MS = 250L;
 
     private final AtomicInteger activeTasks = new AtomicInteger(0);
     private final List<BuildData.Metric> metrics = new ArrayList<>();

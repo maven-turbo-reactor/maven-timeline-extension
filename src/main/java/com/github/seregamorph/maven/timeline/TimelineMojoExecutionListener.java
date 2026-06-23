@@ -27,11 +27,11 @@ public class TimelineMojoExecutionListener implements MojoExecutionListener {
 
     @Override
     public void afterMojoExecutionSuccess(MojoExecutionEvent event) {
-        timelineHelper.onSuccess(event);
+        timelineHelper.onComplete(event, true);
     }
 
     @Override
     public void afterExecutionFailure(MojoExecutionEvent event) {
-        timelineHelper.onFailure(event);
+        timelineHelper.onComplete(event, false);
     }
 }

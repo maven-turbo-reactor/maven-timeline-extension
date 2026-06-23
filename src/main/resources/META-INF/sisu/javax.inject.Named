@@ -1,3 +1,4 @@
+com.github.seregamorph.maven.timeline.TimelineEventSpy
 com.github.seregamorph.maven.timeline.TimelineLifecycleParticipant
 com.github.seregamorph.maven.timeline.TimelineMojoExecutionListener
-com.github.seregamorph.maven.timeline.TimelineEventSpy
+com.github.seregamorph.maven.timeline.TimelineProjectExecutionListener
