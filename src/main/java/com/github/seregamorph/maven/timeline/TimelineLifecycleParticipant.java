@@ -28,7 +28,7 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
 
     @Override
     public void afterSessionEnd(MavenSession session) {
-        BuildData buildData = timelineHelper.createBuildData();
+        BuildData buildData = timelineHelper.complete();
         File targetDir = new File(session.getExecutionRootDirectory(), "target");
         File timelineDir = new File(targetDir, "timeline");
         timelineDir.mkdirs();

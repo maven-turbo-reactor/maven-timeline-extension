@@ -24,8 +24,8 @@ public class TimelineHelper {
     private int modulesNumber;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
-
     private Map<Integer, Map<GroupArtifactId, ModuleData>> threadModules;
+    private MetricsCollector metricsCollector;
 
     private static class ModuleData {
 
@@ -62,23 +62,27 @@ public class TimelineHelper {
         // start with 0
         currentWorkerThreadId = ThreadLocal.withInitial(workerThreadCounter::getAndIncrement);
         threadModules = Collections.synchronizedMap(new LinkedHashMap<>());
+        metricsCollector = new MetricsCollector(startTime);
+        metricsCollector.start();
     }
 
     void onStart(MojoExecutionEvent event) {
+        metricsCollector.incActiveTasks();
         ModuleData moduleData = getModuleData(event);
         moduleData.startedGoal = new StartedGoal(Instant.now());
     }
 
     void onSuccess(MojoExecutionEvent event) {
-        ModuleData moduleData = getModuleData(event);
-        String goalName = event.getExecution().getGoal();
-        CompleteGoal completeGoal = new CompleteGoal(goalName, moduleData.startedGoal.started, Instant.now());
-        moduleData.completeGoals.add(completeGoal);
-        moduleData.startedGoal = null;
+        onComplete(event, true);
     }
 
     void onFailure(MojoExecutionEvent event) {
-        // todo mark failed
+        onComplete(event, false);
+    }
+
+    private void onComplete(MojoExecutionEvent event, boolean success) {
+        // todo distinguish failure
+        metricsCollector.decActiveTasks();
         ModuleData moduleData = getModuleData(event);
         String goalName = event.getExecution().getGoal();
         CompleteGoal completeGoal = new CompleteGoal(goalName, moduleData.startedGoal.started, Instant.now());
@@ -94,12 +98,13 @@ public class TimelineHelper {
         return modules.computeIfAbsent(groupArtifactId, $ -> new ModuleData());
     }
 
-    BigDecimal fromStart(Instant time) {
+    private BigDecimal fromStart(Instant time) {
         Duration duration = Duration.between(startTime, time);
         return TimeFormatUtils.toSeconds(duration);
     }
 
-    BuildData createBuildData() {
+    BuildData complete() {
+        metricsCollector.interrupt();
         Instant finished = Instant.now();
         BigDecimal totalDurationSec = fromStart(finished);
         List<BuildData.Task> tasks = new ArrayList<>();
@@ -135,7 +140,7 @@ public class TimelineHelper {
                 ));
             }
         }
-        List<BuildData.Metric> metrics = new ArrayList<>();
+        List<BuildData.Metric> metrics = metricsCollector.getMetrics();
         BuildData.Meta meta = new BuildData.Meta(
             workerThreadCounter.get(),
             modulesNumber,
