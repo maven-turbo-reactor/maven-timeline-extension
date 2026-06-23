@@ -184,7 +184,7 @@ public final class BuildData {
         private final int active;
         private final BigDecimal heapUsed;
         private final BigDecimal heapCommitted;
-        private final boolean gc;
+        private boolean gc;
         private final BigDecimal processCpu;
         private final BigDecimal systemCpu;
         private final int threads;
@@ -227,6 +227,10 @@ public final class BuildData {
 
         public BigDecimal getHeapCommitted() {
             return heapCommitted;
+        }
+
+        public void setGc(boolean gc) {
+            this.gc = gc;
         }
 
         public boolean isGc() {

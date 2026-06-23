@@ -1,6 +1,7 @@
 package com.github.seregamorph.maven.timeline;
 
 import com.sun.management.OperatingSystemMXBean;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.ThreadMXBean;
@@ -28,18 +29,26 @@ public class MetricsCollector {
      */
     private final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
     private final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+    private final List<GarbageCollectorMXBean> garbageCollectorMXBean = ManagementFactory.getGarbageCollectorMXBeans();
     private final OperatingSystemMXBean operatingSystemMXBean =
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     private final Instant startTime;
     private final Thread worker;
 
+    // @GuardedBy("metrics")
     private boolean active = true;
+
+    // @GuardedBy("metrics")
+    private Long gcCount = null;
 
     public MetricsCollector(Instant startTime) {
         this.startTime = startTime;
         // first metric
-        BuildData.Metric firstMetric = scrapeMetric();
+        BuildData.Metric firstMetric;
+        synchronized (metrics) {
+            firstMetric = scrapeMetrics();
+        }
         worker = new Thread(() -> {
             synchronized (metrics) {
                 metrics.add(firstMetric);
@@ -50,7 +59,7 @@ public class MetricsCollector {
                         return;
                     }
                     if (active) {
-                        BuildData.Metric metric = scrapeMetric();
+                        BuildData.Metric metric = scrapeMetrics();
                         metrics.add(metric);
                     }
                 }
@@ -58,7 +67,7 @@ public class MetricsCollector {
         });
     }
 
-    private BuildData.Metric scrapeMetric() {
+    private BuildData.Metric scrapeMetrics() {
         int threads = threadMXBean.getThreadCount();
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
@@ -67,12 +76,15 @@ public class MetricsCollector {
         // value when not yet available (e.g. first sample)
         double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
         double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
+        long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
+        boolean gc = this.gcCount != null && this.gcCount < gcCount;
+        this.gcCount = gcCount;
         return new BuildData.Metric(
             fromStart(Instant.now()),
             activeTasks.get(),
             megabytes(heapUsedBytes),
             megabytes(heapCommittedBytes),
-            false,
+            gc,
             cpuPercent(processCpuLoad),
             cpuPercent(systemCpuLoad),
             threads + daemonThreads,
@@ -84,8 +96,20 @@ public class MetricsCollector {
         synchronized (metrics) {
             active = false;
             List<BuildData.Metric> result = new ArrayList<>(metrics);
-            BuildData.Metric lastMetric = scrapeMetric();
+            BuildData.Metric lastMetric = scrapeMetrics();
             result.add(lastMetric);
+
+            // shift "gc" one metric left as we register this after,
+            // but visually it's more reasonable to be shown as before
+            BuildData.Metric prevMetric = null;
+            for (BuildData.Metric metric : result) {
+                if (prevMetric != null) {
+                    prevMetric.setGc(metric.isGc());
+                }
+                prevMetric = metric;
+            }
+            lastMetric.setGc(false);
+
             metrics.notify();
             return result;
         }
