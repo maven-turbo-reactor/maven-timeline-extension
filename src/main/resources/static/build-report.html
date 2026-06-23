@@ -330,7 +330,7 @@ function buildAll(){
     {key:"heapUsed",label:"used",color:"#b54a3a",fill:"#c46352",fillOpacity:0.55}]}));
   charts.push(buildMetric("threads",{height:64,series:[
     {key:"threads",label:"live threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.4}]}));
-  charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2),series:[
+  charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2).replace(/\.00$/,""),series:[
     {key:"resolverDownload",label:"download",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4},
     {key:"resolverUpload",label:"upload",color:"#b07cc6",fill:"#c79ad8",fillOpacity:0.4}]}));
   charts.push(buildMetric("cpu",{height:64,unit:"%",yMax:100,series:[
