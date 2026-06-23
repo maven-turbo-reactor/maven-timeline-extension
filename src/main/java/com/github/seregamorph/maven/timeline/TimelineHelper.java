@@ -56,13 +56,13 @@ public class TimelineHelper {
 
     void init(MavenSession session) {
         startTime = Instant.now();
+        metricsCollector = new MetricsCollector(startTime);
         modulesNumber = session.getAllProjects().size();
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();
         // start with 0
         currentWorkerThreadId = ThreadLocal.withInitial(workerThreadCounter::getAndIncrement);
         threadModules = Collections.synchronizedMap(new LinkedHashMap<>());
-        metricsCollector = new MetricsCollector(startTime);
         metricsCollector.start();
     }
 
@@ -104,7 +104,6 @@ public class TimelineHelper {
     }
 
     BuildData complete() {
-        metricsCollector.interrupt();
         Instant finished = Instant.now();
         BigDecimal totalDurationSec = fromStart(finished);
         List<BuildData.Task> tasks = new ArrayList<>();
