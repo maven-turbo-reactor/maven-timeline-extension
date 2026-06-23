@@ -22,6 +22,7 @@ import org.apache.maven.project.MavenProject;
 @Singleton
 public class TimelineHelper {
 
+    public static final String PREPARE_GOAL = "<prepare>";
     private final ResolverIoStats resolverIoStats;
 
     private Instant startTime;
@@ -93,7 +94,7 @@ public class TimelineHelper {
         ModuleData moduleData = getModuleData(event.getProject());
         if (moduleData.completeGoals.isEmpty()) {
             // add fake "pre-execution" phase
-            moduleData.completeGoals.add(new CompleteGoal("<prepare>", moduleData.startedProject, Instant.now()));
+            moduleData.completeGoals.add(new CompleteGoal(PREPARE_GOAL, moduleData.startedProject, Instant.now()));
         }
         moduleData.startedGoal = new StartedGoal(Instant.now());
     }
@@ -139,7 +140,9 @@ public class TimelineHelper {
                 Instant earliestStarted = null;
                 Instant latestFinished = null;
                 for (CompleteGoal completeGoal : moduleData.completeGoals) {
-                    totalGoals++;
+                    if (!PREPARE_GOAL.equals(completeGoal.name)) {
+                        totalGoals++;
+                    }
                     goals.add(new BuildData.Goal(
                         completeGoal.name,
                         fromStart(completeGoal.started),

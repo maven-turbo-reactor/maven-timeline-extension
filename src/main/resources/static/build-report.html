@@ -88,10 +88,14 @@ let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0, DATA_
 // with a per-module saturation tweak so goals of the same module read together
 const PHASE_HUE={clean:40,compile:210,testCompile:265,test:12,jar:140,"source:jar":165,install:95};
 const PHASE_KEYS=["clean","compile","testCompile","test","jar","source:jar","install"];
+// synthetic goal injected by the extension: the gap between project init and its first real goal
+const PREPARE_GOAL="<prepare>";
+const isPrepare=d=>d.goal===PREPARE_GOAL;
 function phaseOf(g){return PHASE_HUE[g]!=null?g:"compile";}
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
 function goalColor(d){const k=phaseOf(d.goal);const sat=46+(Math.abs(hashStr(d.module))%16);
   return d3.hsl(PHASE_HUE[k],sat/100,0.52).toString();}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 /* ====================== layout / shared scale ====================== */
 const fmtTime=s=>{const m=Math.floor(s/60),sec=s-m*60;return m>0?`${m}m ${sec.toFixed(1)}s`:`${sec.toFixed(1)}s`;};
@@ -175,8 +179,15 @@ function buildGantt(){
   const xAxisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
   const labels=g.append("g");
   const bars=g.append("g").attr("clip-path","url(#clipG)");
-  svg.append("defs").append("clipPath").attr("id","clipG")
+  const defs=svg.append("defs");
+  defs.append("clipPath").attr("id","clipG")
     .append("rect").attr("width",innerW).attr("height",innerH);
+  // diagonal hatch used to mark the synthetic <prepare> goal (not a real Maven goal)
+  const hatch=defs.append("pattern").attr("id","prepHatch").attr("patternUnits","userSpaceOnUse")
+    .attr("width",6).attr("height",6).attr("patternTransform","rotate(45)");
+  hatch.append("rect").attr("width",6).attr("height",6).attr("fill","#e4e7eb");
+  hatch.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",6)
+    .attr("stroke","#aeb6bf").attr("stroke-width",2.4);
 
   // static lane backgrounds + labels
   d3.range(N_THREADS).forEach(i=>{
@@ -207,10 +218,16 @@ function buildGantt(){
       .attr("x",d=>Math.max(0,xz(d.start)))
       .attr("y",d=>d.thread*(LANE_H+GAP)+2)
       .attr("width",d=>Math.max(1,Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start))))
-      .attr("height",LANE_H-4).attr("fill",d=>goalColor(d));
+      .attr("height",LANE_H-4)
+      .attr("fill",d=>isPrepare(d)?"url(#prepHatch)":goalColor(d))
+      .attr("stroke",d=>isPrepare(d)?"#9aa5b1":null)
+      .attr("stroke-dasharray",d=>isPrepare(d)?"2 2":null)
+      .attr("stroke-width",d=>isPrepare(d)?1:null);
     merged.select("text")
       .attr("x",d=>Math.max(0,xz(d.start))+5)
       .attr("y",d=>d.thread*(LANE_H+GAP)+LANE_H/2+3.5)
+      // dark label on the light hatch (the white default would be unreadable)
+      .attr("fill",d=>isPrepare(d)?"#52606d":null)
       .text(d=>{const w=Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start));
         if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.goal;});
   }
@@ -223,10 +240,11 @@ function buildGantt(){
       const lane=Math.floor(py/(LANE_H+GAP)), tm=xz.invert(px);
       const hit=(lane>=0&&lane<N_THREADS)?goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm):null;
       if(hit) showTip(
-        `<b>${hit.module} <span style="color:#cbd2d9">:</span> ${hit.goal}</b>`+
+        `<b>${esc(hit.module)} <span style="color:#cbd2d9">:</span> ${esc(hit.goal)}</b>`+
         `<br><span class="row">worker-${hit.thread+1}</span>`+
         `<br><span class="row">start: <b>${fmtTime(hit.start)}</b></span>`+
-        `<br><span class="row">goal time: <b>${hit.dur.toFixed(2)}s</b></span>`,ev);
+        `<br><span class="row">${isPrepare(hit)?"prepare time":"goal time"}: <b>${hit.dur.toFixed(2)}s</b></span>`+
+        (isPrepare(hit)?`<br><span class="row" style="color:#ffd479">synthetic · project init → first goal</span>`:""),ev);
       else hideTip();
     })
     .on("pointerleave.cross",()=>{moveCrosshair(null);hideTip();});
@@ -320,6 +338,10 @@ const legend=d3.select("#legend");
 PHASE_KEYS.forEach(k=>{
   legend.append("span").html(`<i style="background:hsl(${PHASE_HUE[k]} 52% 52%)"></i>${k}`);
 });
+// synthetic prepare phase — mirror the gantt's diagonal hatch in the swatch
+legend.append("span").html(
+  `<i style="background:repeating-linear-gradient(45deg,#e4e7eb 0 2px,#aeb6bf 2px 4px);`+
+  `border:1px dashed #9aa5b1"></i>&lt;prepare&gt;`);
 
 /* ====================== build & wire ====================== */
 function buildAll(){
