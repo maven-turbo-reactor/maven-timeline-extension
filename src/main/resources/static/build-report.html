@@ -60,7 +60,7 @@
   </header>
   <div class="toolbar">
     <button id="resetZoom">Reset zoom</button>
-    <span class="hint">Scroll / pinch to zoom · drag to pan · all charts stay aligned · double-click to reset</span>
+    <span class="hint">Scroll / pinch to zoom · drag or two-finger swipe to pan · all charts stay aligned · double-click to zoom in</span>
   </div>
 
   <div class="panel">
@@ -144,6 +144,21 @@ function setView(s){
   syncTransform(current);
   xz = current.rescaleX(x);
   charts.forEach(c=>c.draw());
+}
+
+// pan the shared view by dpx screen pixels (trackpad two-finger horizontal swipe);
+// clamped to the same translateExtent the zoom behavior enforces, so we never
+// scroll past either edge of the timeline. at k=1 the whole build is visible → no-op.
+function panBy(dpx){
+  const k=current.k;
+  const minTx=(1-k)*INNERW, maxTx=0;       // keep domain within [0, INNERW]
+  const tx=Math.max(minTx, Math.min(maxTx, current.x-dpx));
+  if(tx===current.x) return;
+  current=d3.zoomIdentity.translate(tx,0).scale(k);
+  syncTransform(current);
+  xz=current.rescaleX(x);
+  charts.forEach(c=>c.draw());
+  if(navMove){ suppress=true; navMove([x(xz.domain()[0]), x(xz.domain()[1])]); suppress=false; }
 }
 
 function applyZoomBehavior(svg,innerW,innerH){
@@ -363,6 +378,18 @@ function buildAll(){
 }
 d3.select("#resetZoom").on("click",resetZoom);
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{xz=x;buildAll();},150);});
+
+// trackpad two-finger horizontal swipe → pan the timeline left/right.
+// captured before d3.zoom's wheel handler (which lives on the overlay, in the bubble
+// phase) so a dominant deltaX never gets misread as a zoom; vertical wheels and pinch
+// (ctrlKey) fall through to d3.zoom unchanged.
+addEventListener("wheel",ev=>{
+  if(ev.ctrlKey) return;                                      // pinch-zoom: leave to d3
+  if(!ev.target.closest||!ev.target.closest(".zoom-overlay")) return;
+  if(Math.abs(ev.deltaX)<=Math.abs(ev.deltaY)) return;        // vertical: leave to d3 zoom
+  ev.preventDefault(); ev.stopPropagation();
+  panBy(ev.deltaX);
+},{capture:true,passive:false});
 
 /* ====================== load data & render ====================== */
 function ingest(data){
