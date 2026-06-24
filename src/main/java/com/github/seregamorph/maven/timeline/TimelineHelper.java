@@ -52,6 +52,8 @@ public class TimelineHelper {
 
         private StartedGoal startedGoal;
 
+        private Instant finishedProject;
+
         private ModuleData(Instant startedProject) {
             this.startedProject = startedProject;
         }
@@ -197,6 +199,8 @@ public class TimelineHelper {
 
     void onComplete(ProjectExecutionEvent event, boolean success) {
         metricsCollector.decActiveTasks();
+        ModuleData moduleData = getModuleData(event.getProject());
+        moduleData.finishedProject = Instant.now();
     }
 
     private ModuleData getModuleData(MavenProject project) {
@@ -223,8 +227,6 @@ public class TimelineHelper {
                 GroupArtifactId groupArtifactId = moduleDataEntry.getKey();
                 ModuleData moduleData = moduleDataEntry.getValue();
                 List<BuildData.Goal> goals = new ArrayList<>();
-                Instant earliestStarted = null;
-                Instant latestFinished = null;
                 for (CompleteGoal completeGoal : moduleData.completeGoals) {
                     if (!PREPARE_GOAL.equals(completeGoal.name)) {
                         totalGoals++;
@@ -236,20 +238,14 @@ public class TimelineHelper {
                         fromStart(completeGoal.finished),
                         TimeFormatUtils.toSeconds(Duration.between(completeGoal.started, completeGoal.finished))
                     ));
-                    if (earliestStarted == null || earliestStarted.compareTo(completeGoal.started) < 0) {
-                        earliestStarted = completeGoal.started;
-                    }
-                    if (latestFinished == null || latestFinished.compareTo(completeGoal.finished) > 0) {
-                        latestFinished = completeGoal.finished;
-                    }
                 }
                 String moduleName = duplicateArtifactIds.contains(groupArtifactId.artifactId()) ?
                     groupArtifactId.toString() : groupArtifactId.artifactId();
                 tasks.add(new BuildData.Task(
                     moduleName,
                     threadId,
-                    fromStart(earliestStarted), fromStart(latestFinished),
-                    TimeFormatUtils.toSeconds(Duration.between(earliestStarted, latestFinished)),
+                    fromStart(moduleData.startedProject), fromStart(moduleData.finishedProject),
+                    TimeFormatUtils.toSeconds(Duration.between(moduleData.startedProject, moduleData.finishedProject)),
                     goals
                 ));
             }
