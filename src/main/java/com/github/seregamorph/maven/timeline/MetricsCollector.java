@@ -50,6 +50,9 @@ public class MetricsCollector {
     private long lastDownloadedBytes = 0L;
     // @GuardedBy("metrics")
     private long lastUploadedBytes = 0L;
+    // last valid CPU readings, carried forward whenever the bean reports a negative
+    // @GuardedBy("metrics")
+    private double lastSystemCpuLoad = 0d;
 
     public MetricsCollector(ResolverIoStats resolverIoStats, Instant startTime) {
         this.startTime = startTime;
@@ -83,10 +86,13 @@ public class MetricsCollector {
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
         long heapCommittedBytes = memoryMXBean.getHeapMemoryUsage().getCommitted();
-        // recent CPU usage as a fraction [0.0, 1.0]; both return a negative
-        // value when not yet available (e.g. first sample)
         double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
         double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
+        // recent CPU usage as a fraction [0.0, 1.0]; both return a negative value when
+        // not available (the first sample, but also intermittently mid-run — especially
+        // the system-wide reading on macOS / in containers). Carry the last valid value
+        // forward in that case, otherwise a momentary gap would read as an impossible 0%.
+        systemCpuLoad = lastSystemCpuLoad = systemCpuLoad <= 0 ? lastSystemCpuLoad : systemCpuLoad;
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
