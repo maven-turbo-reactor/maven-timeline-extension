@@ -90,17 +90,21 @@
    instrumentation will replace that generator while keeping the same schema). */
 let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0, DATA_LABEL="";
 
-// the timeline atom is a single maven goal; each goal is colored by its phase,
-// with a per-module saturation tweak so goals of the same module read together
-const PHASE_HUE={clean:40,compile:210,testCompile:265,test:12,jar:140,"source:jar":165,install:95};
-const PHASE_KEYS=["clean","compile","testCompile","test","jar","source:jar","install"];
+// the timeline atom is a single maven goal; each goal is colored by its "type"
+// (a coarse classification emitted by the extension), with a per-module saturation
+// tweak so goals of the same type+module read together. Anything not in TYPE_HUE
+// (type "other", or missing) is rendered neutral gray.
+const TYPE_HUE={compile:210,"test-compile":265,test:12,deploy:140};
+const TYPE_KEYS=["compile","test-compile","test","deploy","other"];
+const OTHER_COLOR="#9aa5b1";
 // synthetic goal injected by the extension: the gap between project init and its first real goal
 const PREPARE_GOAL="<prepare>";
 const isPrepare=d=>d.goal===PREPARE_GOAL;
-function phaseOf(g){return PHASE_HUE[g]!=null?g:"compile";}
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
-function goalColor(d){const k=phaseOf(d.goal);const sat=46+(Math.abs(hashStr(d.module))%16);
-  return d3.hsl(PHASE_HUE[k],sat/100,0.52).toString();}
+function goalColor(d){const hue=TYPE_HUE[d.type];
+  if(hue==null) return OTHER_COLOR;
+  const sat=46+(Math.abs(hashStr(d.module))%16);
+  return d3.hsl(hue,sat/100,0.52).toString();}
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 /* ====================== layout / shared scale ====================== */
@@ -355,8 +359,9 @@ function buildNavigator(){
 
 /* ====================== legend ====================== */
 const legend=d3.select("#legend");
-PHASE_KEYS.forEach(k=>{
-  legend.append("span").html(`<i style="background:hsl(${PHASE_HUE[k]} 52% 52%)"></i>${k}`);
+TYPE_KEYS.forEach(k=>{
+  const c=TYPE_HUE[k]!=null?`hsl(${TYPE_HUE[k]} 52% 52%)`:OTHER_COLOR;
+  legend.append("span").html(`<i style="background:${c}"></i>${k}`);
 });
 // synthetic prepare phase — mirror the gantt's diagonal hatch in the swatch
 legend.append("span").html(
@@ -404,7 +409,7 @@ function ingest(data){
   goals = [];
   tasks.forEach(t=>(t.goals||[]).forEach((g,i)=>{
     goals.push({uid:t.module+"#"+i, module:t.module, thread:t.thread,
-      goal:g.name, start:g.start, end:g.end, dur:g.dur});
+      goal:g.name, type:g.type, start:g.start, end:g.end, dur:g.dur});
   }));
   const meta = data.meta || {};
   N_THREADS  = meta.threads ?? d3.max(tasks,t=>t.thread)+1 ?? 1;

@@ -141,6 +141,8 @@ public final class BuildData {
     public static final class Goal {
 
         private final String name;
+        // coarse classification used to color the timeline atom (see TimelineHelper.goalType)
+        private final String type;
         private final BigDecimal start;
         private final BigDecimal end;
         private final BigDecimal dur;
@@ -148,11 +150,13 @@ public final class BuildData {
         @JsonCreator
         public Goal(
             @JsonProperty("name") String name,
+            @JsonProperty("type") String type,
             @JsonProperty("start") BigDecimal start,
             @JsonProperty("end") BigDecimal end,
             @JsonProperty("dur") BigDecimal dur
         ) {
             this.name = name;
+            this.type = type;
             this.start = start;
             this.end = end;
             this.dur = dur;
@@ -160,6 +164,10 @@ public final class BuildData {
 
         public String getName() {
             return name;
+        }
+
+        public String getType() {
+            return type;
         }
 
         public BigDecimal getStart() {

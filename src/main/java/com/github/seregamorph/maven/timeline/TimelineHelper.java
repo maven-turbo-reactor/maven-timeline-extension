@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.maven.execution.MavenSession;
@@ -27,6 +30,10 @@ public class TimelineHelper {
 
     private Instant startTime;
     private int modulesNumber;
+    /**
+     * If there is more than 1 module with the same artifactId, distinguish it with "${groupId}:" prefix
+     */
+    private Set<String> duplicateArtifactIds;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
     private Map<Integer, Map<GroupArtifactId, ModuleData>> threadModules;
@@ -59,12 +66,20 @@ public class TimelineHelper {
     }
 
     private static class CompleteGoal {
+        /**
+         * "${pluginName}:${goalName}@${executionId}"
+         */
         private final String name;
+        /**
+         * Coarse goal classification used to color the timeline, see {@link #goalType}.
+         */
+        private final String type;
         private final Instant started;
         private final Instant finished;
 
-        private CompleteGoal(String name, Instant started, Instant finished) {
+        private CompleteGoal(String name, String type, Instant started, Instant finished) {
             this.name = name;
+            this.type = type;
             this.started = started;
             this.finished = finished;
         }
@@ -76,6 +91,14 @@ public class TimelineHelper {
         startTime = Instant.now();
         metricsCollector = new MetricsCollector(resolverIoStats, startTime);
         modulesNumber = session.getAllProjects().size();
+        duplicateArtifactIds = session.getAllProjects().stream()
+            .map(MavenProject::getArtifactId)
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+            .entrySet()
+            .stream()
+            .filter(p -> p.getValue() > 1)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();
         // start with 0
@@ -94,7 +117,8 @@ public class TimelineHelper {
         ModuleData moduleData = getModuleData(event.getProject());
         if (moduleData.completeGoals.isEmpty()) {
             // add fake "pre-execution" phase
-            moduleData.completeGoals.add(new CompleteGoal(PREPARE_GOAL, moduleData.startedProject, Instant.now()));
+            moduleData.completeGoals.add(new CompleteGoal(
+                PREPARE_GOAL, PREPARE_GOAL, moduleData.startedProject, Instant.now()));
         }
         moduleData.startedGoal = new StartedGoal(Instant.now());
     }
@@ -103,10 +127,71 @@ public class TimelineHelper {
         // todo distinguish failure
         ModuleData moduleData = getModuleData(event.getProject());
 
-        String goalName = event.getExecution().getGoal();
-        CompleteGoal completeGoal = new CompleteGoal(goalName, moduleData.startedGoal.startedGoal, Instant.now());
+        String pluginArtifactId = event.getExecution().getArtifactId();
+        String pluginName = getPluginName(pluginArtifactId);
+        String goal = event.getExecution().getGoal();
+        String executionId = event.getExecution().getExecutionId();
+        String goalName = pluginName + ":" + goal + (goal.equals(executionId) ? "" : "@" + executionId);
+        String type = goalType(pluginArtifactId, goal);
+        CompleteGoal completeGoal = new CompleteGoal(
+            goalName, type, moduleData.startedGoal.startedGoal, Instant.now());
         moduleData.completeGoals.add(completeGoal);
         moduleData.startedGoal = null;
+    }
+
+    static String getPluginName(String pluginArtifactId) {
+        if (pluginArtifactId.startsWith("maven-") && pluginArtifactId.endsWith("-plugin")) {
+            return pluginArtifactId.substring(6, pluginArtifactId.length() - 7);
+        }
+        if (pluginArtifactId.endsWith("-maven-plugin")) {
+            return pluginArtifactId.substring(0, pluginArtifactId.length() - 13);
+        }
+        return pluginArtifactId;
+    }
+
+    /**
+     * Coarse classification of a goal, used by the report to color timeline atoms.
+     * Returns one of {@code "compile"}, {@code "test-compile"}, {@code "test"},
+     * {@code "deploy"}, or {@code "other"} for everything else
+     * (the synthetic {@code "<prepare>"} type is assigned separately).
+     */
+    static String goalType(String pluginArtifactId, String goal) {
+        switch (pluginArtifactId) {
+            case "maven-compiler-plugin":
+                if ("compile".equals(goal)) {
+                    return "compile";
+                }
+                if ("testCompile".equals(goal)) {
+                    return "test-compile";
+                }
+                break;
+            case "kotlin-maven-plugin":
+                if ("compile".equals(goal)) {
+                    return "compile";
+                }
+                if ("test-compile".equals(goal)) {
+                    return "test-compile";
+                }
+                break;
+            case "maven-surefire-plugin":
+                if ("test".equals(goal)) {
+                    return "test";
+                }
+                break;
+            case "maven-failsafe-plugin":
+                if ("integration-test".equals(goal)) {
+                    return "test";
+                }
+                break;
+            case "maven-deploy-plugin":
+                if ("deploy".equals(goal)) {
+                    return "deploy";
+                }
+                break;
+            default:
+                break;
+        }
+        return "other";
     }
 
     void onComplete(ProjectExecutionEvent event, boolean success) {
@@ -145,6 +230,7 @@ public class TimelineHelper {
                     }
                     goals.add(new BuildData.Goal(
                         completeGoal.name,
+                        completeGoal.type,
                         fromStart(completeGoal.started),
                         fromStart(completeGoal.finished),
                         TimeFormatUtils.toSeconds(Duration.between(completeGoal.started, completeGoal.finished))
@@ -156,8 +242,11 @@ public class TimelineHelper {
                         latestFinished = completeGoal.finished;
                     }
                 }
+                String moduleName = duplicateArtifactIds.contains(groupArtifactId.artifactId()) ?
+                    groupArtifactId.toString() : groupArtifactId.artifactId();
                 tasks.add(new BuildData.Task(
-                    groupArtifactId.toString(), threadId,
+                    moduleName,
+                    threadId,
                     fromStart(earliestStarted), fromStart(latestFinished),
                     TimeFormatUtils.toSeconds(Duration.between(earliestStarted, latestFinished)),
                     goals
