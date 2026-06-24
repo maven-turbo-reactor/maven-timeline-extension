@@ -76,6 +76,12 @@
 </div>
 <div class="tip" id="tip"></div>
 
+<!-- Build data. The extension inlines build-data.json here for a self-contained,
+     single-file report. When a separate build-data.json is emitted instead
+     (timelineJsonReport=true) this keeps the placeholder token and the loader
+     below falls back to fetching the sibling build-data.json. -->
+<script id="buildData" type="application/json">__TIMELINE_BUILD_DATA__</script>
+
 <script>
 "use strict";
 /* ====================== build data (loaded from build-data.json) ======================
@@ -407,20 +413,29 @@ function ingest(data){
   totalGoals = meta.totalGoals ?? goals.length;
   x.domain([T0,T1]);
   d3.select("#headline").text(`${totalGoals} goals executed in ${tasks.length} modules in ${fmtTime(T1)}`);
-  d3.select("#subline").text(`${N_THREADS} worker threads · D3 v7 · loaded from build-data.json`);
+  d3.select("#subline").text(`${N_THREADS} worker threads · D3 v7`);
   buildAll();
 }
 
-d3.json("build-data.json")
-  .then(ingest)
-  .catch(err=>{
-    d3.select("#headline").text("Could not load build-data.json");
-    d3.select("#subline").html(
-      `Run <code>node generate-build-data.js</code>, then serve over HTTP `+
-      `(e.g. <code>python3 -m http.server</code>) — browsers block fetch() on file:// URLs. `+
-      `<span style="color:#b54a3a">${err}</span>`);
-    console.error(err);
-  });
+// Prefer build data inlined into this file (self-contained report); a real JSON object
+// starts with "{", whereas the unreplaced placeholder token does not. Otherwise fall
+// back to fetching the sibling build-data.json (timelineJsonReport=true mode).
+const inlineDataEl = document.getElementById("buildData");
+const inlineData = inlineDataEl ? inlineDataEl.textContent.trim() : "";
+if (inlineData.charAt(0) === "{") {
+  ingest(JSON.parse(inlineData));
+} else {
+  d3.json("build-data.json")
+    .then(ingest)
+    .catch(err=>{
+      d3.select("#headline").text("Could not load build-data.json");
+      d3.select("#subline").html(
+        `Serve this report over HTTP (e.g. <code>python3 -m http.server</code>) — `+
+        `browsers block fetch() on file:// URLs. `+
+        `<span style="color:#b54a3a">${err}</span>`);
+      console.error(err);
+    });
+}
 </script>
 </body>
 </html>
