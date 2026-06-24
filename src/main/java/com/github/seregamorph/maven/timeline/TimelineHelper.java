@@ -131,7 +131,8 @@ public class TimelineHelper {
         String pluginName = getPluginName(pluginArtifactId);
         String goal = event.getExecution().getGoal();
         String executionId = event.getExecution().getExecutionId();
-        String goalName = pluginName + ":" + goal + (goal.equals(executionId) ? "" : "@" + executionId);
+        String goalName = (pluginName.equals(goal) ? pluginName : pluginName + ":" + goal)
+            + (goal.equals(executionId) ? "" : "@" + executionId);
         String type = goalType(pluginArtifactId, goal);
         CompleteGoal completeGoal = new CompleteGoal(
             goalName, type, moduleData.startedGoal.startedGoal, Instant.now());
