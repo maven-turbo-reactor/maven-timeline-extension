@@ -254,7 +254,7 @@ function buildGantt(){
       .attr("y",d=>d.thread*(LANE_H+GAP)+LANE_H/2+3.5)
       // white label reads cleanly on the inverted (darker) hatch
       .text(d=>{const w=Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start));
-        if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.goal;});
+        if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.module;});
   }
 
   svg.select(".zoom-overlay")
