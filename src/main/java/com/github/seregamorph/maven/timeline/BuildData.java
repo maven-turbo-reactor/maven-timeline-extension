@@ -50,18 +50,21 @@ public final class BuildData {
         private final int modules;
         private final int totalGoals;
         private final BigDecimal duration;
+        private final BigDecimal serialDuration;
 
         @JsonCreator
         public Meta(
             @JsonProperty("threads") int threads,
             @JsonProperty("modules") int modules,
             @JsonProperty("totalGoals") int totalGoals,
-            @JsonProperty("duration") BigDecimal duration
+            @JsonProperty("duration") BigDecimal duration,
+            @JsonProperty("serialDuration") BigDecimal serialDuration
         ) {
             this.threads = threads;
             this.modules = modules;
             this.totalGoals = totalGoals;
             this.duration = duration;
+            this.serialDuration = serialDuration;
         }
 
         public int getThreads() {
@@ -78,6 +81,10 @@ public final class BuildData {
 
         public BigDecimal getDuration() {
             return duration;
+        }
+
+        public BigDecimal getSerialDuration() {
+            return serialDuration;
         }
     }
 

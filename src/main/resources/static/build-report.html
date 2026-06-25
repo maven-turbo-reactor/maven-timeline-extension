@@ -88,7 +88,7 @@
    The report is now fully static. All numbers come from build-data.json, which is
    produced by generate-build-data.js (currently a seeded simulation; the real build
    instrumentation will replace that generator while keeping the same schema). */
-let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0, DATA_LABEL="";
+let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0;
 
 // the timeline atom is a single maven goal; each goal is colored by its "type"
 // (a coarse classification emitted by the extension), with a per-module saturation
@@ -175,6 +175,7 @@ function applyZoomBehavior(svg,innerW,innerH){
   zoom.translateExtent([[0,0],[innerW,innerH]]).extent([[0,0],[innerW,innerH]]);
   svg.select(".zoom-overlay").call(zoom).property("__zoom", current);
 }
+
 function resetZoom(){
   current=d3.zoomIdentity; syncTransform(current); xz=x;
   charts.forEach(c=>c.draw());
@@ -414,10 +415,10 @@ function ingest(data){
   const meta = data.meta || {};
   N_THREADS  = meta.threads ?? d3.max(tasks,t=>t.thread)+1 ?? 1;
   T0 = 0;
-  T1 = meta.duration ?? d3.max(metrics,m=>m.t) ?? d3.max(tasks,t=>t.end) ?? 1;
+  T1 = meta.duration;
   totalGoals = meta.totalGoals ?? goals.length;
   x.domain([T0,T1]);
-  d3.select("#headline").text(`${totalGoals} goals executed in ${tasks.length} modules in ${fmtTime(T1)}`);
+  d3.select("#headline").text(`${totalGoals} goals executed in ${tasks.length} modules in ${fmtTime(T1)} (${fmtTime(meta.serialDuration)} serial)`);
   d3.select("#subline").text(`${N_THREADS} worker threads · D3 v7`);
   buildAll();
 }

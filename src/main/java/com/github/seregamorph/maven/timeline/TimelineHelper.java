@@ -218,9 +218,10 @@ public class TimelineHelper {
 
     BuildData complete() {
         Instant finished = Instant.now();
-        BigDecimal totalDurationSec = fromStart(finished);
+        BigDecimal durationSec = fromStart(finished);
         List<BuildData.Task> tasks = new ArrayList<>();
         int totalGoals = 0;
+        Duration totalSerialTime = Duration.ZERO;
         for (Map.Entry<Integer, Map<GroupArtifactId, ModuleData>> entry : threadModules.entrySet()) {
             int threadId = entry.getKey();
             for (Map.Entry<GroupArtifactId, ModuleData> moduleDataEntry : entry.getValue().entrySet()) {
@@ -231,6 +232,8 @@ public class TimelineHelper {
                     if (!PREPARE_GOAL.equals(completeGoal.name)) {
                         totalGoals++;
                     }
+                    totalSerialTime = totalSerialTime.plus(
+                        Duration.between(completeGoal.started, completeGoal.finished));
                     goals.add(new BuildData.Goal(
                         completeGoal.name,
                         completeGoal.type,
@@ -255,7 +258,8 @@ public class TimelineHelper {
             workerThreadCounter.get(),
             modulesNumber,
             totalGoals,
-            totalDurationSec);
+            durationSec,
+            TimeFormatUtils.toSeconds(totalSerialTime));
         return new BuildData(
             meta,
             tasks,
