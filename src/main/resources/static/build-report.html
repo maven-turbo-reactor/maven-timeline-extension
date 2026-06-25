@@ -265,7 +265,8 @@ function buildGantt(){
       const lane=Math.floor(py/(LANE_H+GAP)), tm=xz.invert(px);
       const hit=(lane>=0&&lane<N_THREADS)?goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm):null;
       if(hit) showTip(
-        `<b>${esc(hit.module)} <span style="color:#cbd2d9">:</span> ${esc(hit.goal)}</b>`+
+        `<b>${esc(hit.module)}</b>`+
+        `<br><b>${esc(hit.goal)}</b>`+
         `<br><span class="row">worker-${hit.thread+1}</span>`+
         `<br><span class="row">start: <b>${fmtTime(hit.start)}</b></span>`+
         `<br><span class="row">${isPrepare(hit)?"prepare time":"goal time"}: <b>${hit.dur.toFixed(2)}s</b></span>`+
