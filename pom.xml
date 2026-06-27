@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>maven-timeline-extension</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>maven-timeline-extension</name>
     <description>
