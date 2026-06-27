@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.seregamorph</groupId>
         <artifactId>maven-turbo-reactor-parent</artifactId>
-        <version>0.2</version>
+        <version>0.3</version>
     </parent>
 
     <artifactId>maven-timeline-extension</artifactId>
@@ -42,7 +42,6 @@
 
     <properties>
         <maven.version>4.0.0-rc-5</maven.version>
-        <jackson.version>2.22.0</jackson.version>
     </properties>
 
     <dependencies>
@@ -69,7 +68,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
         <!--test-->
