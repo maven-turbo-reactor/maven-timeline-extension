@@ -7,8 +7,8 @@ the project. Also it shows aligned CPU, heap, threds and resolver IO charts. The
 details. Beyond the maven goal execution the timeline has the "preparation" phase of any module which is mostly
 resolving the dependencies.
 
-The sample report:
-<img src="doc/timeline.png" alt="Timeline" width="700"/>
+The sample report [preview](docs/build-report.html):
+<img src="docs/timeline.png" alt="Timeline" width="700"/>
 
 The report is generated at `target/timeline/build-report.html` under the root project directory, it's a single HTML file
 with all needed resources. The chart UI is built using the [D3.js](https://d3js.org/).
