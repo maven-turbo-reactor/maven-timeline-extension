@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maven Timeline Extension — see how your build actually runs</title>
+<meta name="description" content="A Maven extension that produces an interactive, single-file HTML timeline of your build: worker-thread swimlanes with aligned CPU, heap, threads and resolver I/O charts.">
+<style>
+  :root {
+    --ink: #1f2933; --muted: #7b8794; --grid: #eceff1; --border: #e0e4e8;
+    --accent: #2f6fed; --accent-dark: #1f4fb8; --crosshair: #d23f3f;
+    --bg: #f5f6f8; --card: #ffffff;
+    --compile: hsl(210 52% 52%); --testcompile: hsl(265 52% 52%);
+    --test: hsl(12 52% 52%); --deploy: hsl(140 52% 52%); --other: #9aa5b1;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- hero ---- */
+  .hero { background:
+      radial-gradient(1200px 400px at 80% -10%, rgba(47,111,237,.10), transparent 60%),
+      linear-gradient(180deg, #fbfcfe 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border); padding: 64px 0 52px; }
+  .hero .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .hero .badges img { height: 20px; }
+  .hero h1 { font-size: 44px; line-height: 1.1; font-weight: 700; margin: 0 0 14px;
+    letter-spacing: -.02em; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero .lead { font-size: 19px; color: #52606d; max-width: 680px; margin: 0 0 28px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px;
+    border-radius: 8px; font-weight: 600; font-size: 15px; border: 1px solid transparent; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); text-decoration: none; }
+  .btn-ghost { background: #fff; border-color: var(--border); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  /* ---- screenshot ---- */
+  .shot { margin: -28px auto 0; max-width: 1100px; padding: 0 24px; }
+  .shot a { display: block; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border); box-shadow: 0 18px 50px rgba(16,24,40,.14);
+    transition: transform .15s ease, box-shadow .15s ease; }
+  .shot a:hover { transform: translateY(-3px); box-shadow: 0 26px 64px rgba(16,24,40,.20); }
+  .shot img { display: block; width: 100%; }
+  .shot .cap { text-align: center; color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+  /* ---- sections ---- */
+  section { padding: 56px 0; }
+  section h2 { font-size: 28px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 6px; }
+  section .sub { color: var(--muted); margin: 0 0 32px; font-size: 16px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px 22px 20px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+  .card .ic { width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center;
+    margin-bottom: 14px; background: rgba(47,111,237,.10); }
+  .card h3 { font-size: 17px; margin: 0 0 6px; }
+  .card p { margin: 0; color: #52606d; font-size: 14.5px; }
+
+  /* ---- install ---- */
+  .install { background: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  pre.code { background: #0f1722; color: #e6edf3; border-radius: 10px; padding: 18px 20px;
+    overflow-x: auto; font-size: 13.5px; line-height: 1.55; margin: 0 0 16px;
+    border: 1px solid #1c2733; }
+  pre.code .c { color: #6b7886; }      /* comment */
+  pre.code .t { color: #7ee3b8; }      /* tag */
+  pre.code .v { color: #ffd479; }      /* value */
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  .steps li { position: relative; padding: 4px 0 18px 44px; }
+  .steps li::before { counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
+    display: grid; place-items: center; }
+  .steps li strong { display: block; margin-bottom: 2px; }
+  .steps li code { background: var(--grid); padding: 1px 6px; border-radius: 5px; font-size: 13px; }
+  .note { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+
+  /* ---- legend strip ---- */
+  .legend-strip { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 22px;
+    padding: 14px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .legend-strip span { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: #52606d; }
+  .legend-strip i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+  .legend-strip .prep { background: repeating-linear-gradient(45deg,#9aa5b1 0 2px,#cbd2d9 2px 4px);
+    border: 1px dashed #7b8794; }
+
+  /* ---- footer ---- */
+  footer { background: #fff; border-top: 1px solid var(--border); padding: 30px 0; }
+  footer .row { display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 13.5px; }
+  footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 34px; }
+    .hero { padding: 44px 0 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="badges">
+      <a href="https://central.sonatype.com/artifact/com.github.seregamorph/maven-timeline-extension/overview">
+        <img src="https://img.shields.io/maven-central/v/com.github.seregamorph/maven-timeline-extension?style=flat-square" alt="Maven Central Version"></a>
+      <a href="https://github.com/maven-turbo-reactor/maven-timeline-extension/blob/master/LICENSE">
+        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square" alt="License Apache 2.0"></a>
+    </div>
+    <h1>See how your Maven build <span class="accent">actually runs</span>.</h1>
+    <p class="lead">A drop-in Maven extension that records every goal across every worker thread and
+      renders an interactive, single-file HTML timeline — with CPU, heap, live threads and resolver
+      I/O charts all aligned to the same zoomable time axis.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="build-report.html">▶ Open the live sample report</a>
+      <a class="btn btn-ghost" href="https://github.com/maven-turbo-reactor/maven-timeline-extension">View on GitHub</a>
+      <a class="btn btn-ghost" href="#install">Get started</a>
+    </div>
+  </div>
+</div>
+
+<div class="shot">
+  <a href="build-report.html" title="Open the interactive sample report">
+    <img src="timeline.png" alt="Screenshot of the Maven build timeline report">
+  </a>
+  <div class="cap">The screenshot is static — <a href="build-report.html">open the live report</a> to scroll, zoom and hover.</div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>What you get</h2>
+    <p class="sub">One HTML file, opened in any browser, that turns an opaque build log into a profile you can read.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ic">🧵</div>
+        <h3>Worker-thread swimlanes</h3>
+        <p>A Gantt view with one lane per Maven worker thread, so you can instantly see parallelism,
+          stalls and the critical path through your reactor.</p>
+      </div>
+      <div class="card">
+        <div class="ic">📊</div>
+        <h3>Aligned resource charts</h3>
+        <p>CPU utilization (system &amp; process), heap usage with GC markers, live thread count and
+          resolver download/upload throughput — all sharing the timeline's x-axis.</p>
+      </div>
+      <div class="card">
+        <div class="ic">🔍</div>
+        <h3>Zoom &amp; pan, everything synced</h3>
+        <p>Scroll, pinch or double-click to zoom; drag or two-finger swipe to pan. A navigator strip
+          acts as a scrollbar. Every chart and crosshair stays locked to the same window.</p>
+      </div>
+      <div class="card">
+        <div class="ic">⏱️</div>
+        <h3>The &lt;prepare&gt; phase</h3>
+        <p>A synthetic, hatched block surfaces the gap between a module's init and its first real goal —
+          usually dependency resolution — so hidden wait time becomes visible.</p>
+      </div>
+      <div class="card">
+        <div class="ic">🎨</div>
+        <h3>Goals colored by type</h3>
+        <p>compile, test-compile, test and deploy each get a distinct hue, with a per-module saturation
+          tweak so goals of the same module read together. Hover any bar for full detail.</p>
+      </div>
+      <div class="card">
+        <div class="ic">📦</div>
+        <h3>Self-contained, zero install</h3>
+        <p>The report inlines its data and the D3.js chart code into a single static file — commit it,
+          email it, or attach it to a CI artifact. No server required.</p>
+      </div>
+    </div>
+
+    <div class="legend-strip">
+      <span><i style="background:var(--compile)"></i>compile</span>
+      <span><i style="background:var(--testcompile)"></i>test-compile</span>
+      <span><i style="background:var(--test)"></i>test</span>
+      <span><i style="background:var(--deploy)"></i>deploy</span>
+      <span><i style="background:var(--other)"></i>other</span>
+      <span><i class="prep"></i>&lt;prepare&gt;</span>
+    </div>
+  </div>
+</section>
+
+<section class="install" id="install">
+  <div class="wrap">
+    <h2>Get started in one step</h2>
+    <p class="sub">Register the extension; the report is written on every build.</p>
+    <ol class="steps">
+      <li>
+        <strong>Add the extension to <code>.mvn/extensions.xml</code></strong>
+        in the root of your project:
+<pre class="code"><span class="t">&lt;extensions&gt;</span>
+    <span class="t">&lt;extension&gt;</span>
+        <span class="c">&lt;!-- https://github.com/maven-turbo-reactor/maven-timeline-extension --&gt;</span>
+        <span class="t">&lt;groupId&gt;</span>com.github.seregamorph<span class="t">&lt;/groupId&gt;</span>
+        <span class="t">&lt;artifactId&gt;</span>maven-timeline-extension<span class="t">&lt;/artifactId&gt;</span>
+        <span class="t">&lt;version&gt;</span><span class="v">0.1</span><span class="t">&lt;/version&gt;</span>
+    <span class="t">&lt;/extension&gt;</span>
+<span class="t">&lt;/extensions&gt;</span></pre>
+      </li>
+      <li>
+        <strong>Build as usual</strong>
+        — run any Maven command, e.g. <code>mvn verify</code>.
+      </li>
+      <li>
+        <strong>Open the report</strong>
+        — find it at <code>target/timeline/build-report.html</code> under your root project directory
+        and open it in a browser.
+      </li>
+    </ol>
+    <p class="note">Works with both Maven 3 and Maven 4. The chart UI is built with
+      <a href="https://d3js.org/">D3.js</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How to read the timeline</h2>
+    <p class="sub">A quick tour of the report you just opened.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Execution lane</h3>
+        <p>Each bar is a single Maven goal placed on its worker thread. Width = duration. Hover to see
+          the module, goal, worker, start time and elapsed time.</p>
+      </div>
+      <div class="card">
+        <h3>Navigator</h3>
+        <p>The faint strip below the Gantt shows active-task count across the whole build. Drag a window
+          or resize its handles to zoom every chart at once.</p>
+      </div>
+      <div class="card">
+        <h3>Crosshair</h3>
+        <p>Move the cursor over any chart and a shared red crosshair appears across all of them, so you
+          can correlate a CPU spike or GC pause with the goal that caused it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <span>Maven Timeline Extension · Apache License 2.0 · by
+      <a href="https://github.com/seregamorph">Sergey Chernov</a></span>
+    <span class="links">
+      <a href="https://github.com/maven-turbo-reactor/maven-timeline-extension">GitHub</a>
+      <a href="https://central.sonatype.com/artifact/com.github.seregamorph/maven-timeline-extension/overview">Maven Central</a>
+      <a href="build-report.html">Sample report</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -7,7 +7,7 @@ the project. Also it shows aligned CPU, heap, threds and resolver IO charts. The
 details. Beyond the maven goal execution the timeline has the "preparation" phase of any module which is mostly
 resolving the dependencies.
 
-The sample report [preview](docs/build-report.html):
+The sample report [preview](https://maven-turbo-reactor.github.io/maven-timeline-extension/build-report.html):
 <img src="docs/timeline.png" alt="Timeline" width="700"/>
 
 The report is generated at `target/timeline/build-report.html` under the root project directory, it's a single HTML file
