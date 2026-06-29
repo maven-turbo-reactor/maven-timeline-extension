@@ -367,14 +367,14 @@ function buildNavigator(){
 
 /* ====================== legend ====================== */
 const legend=d3.select("#legend");
-TYPE_KEYS.forEach(k=>{
-  const c=TYPE_HUE[k]!=null?`hsl(${TYPE_HUE[k]} 52% 52%)`:OTHER_COLOR;
-  legend.append("span").html(`<i style="background:${c}"></i>${k}`);
-});
 // synthetic prepare phase — mirror the gantt's diagonal hatch in the swatch
 legend.append("span").html(
   `<i style="background:repeating-linear-gradient(45deg,#9aa5b1 0 2px,#cbd2d9 2px 4px);`+
   `border:1px dashed #7b8794"></i>&lt;prepare&gt;`);
+TYPE_KEYS.forEach(k=>{
+  const c=TYPE_HUE[k]!=null?`hsl(${TYPE_HUE[k]} 52% 52%)`:OTHER_COLOR;
+  legend.append("span").html(`<i style="background:${c}"></i>${k}`);
+});
 
 /* ====================== build & wire ====================== */
 function buildAll(){
