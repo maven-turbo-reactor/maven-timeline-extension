@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.maven.execution.MavenSession;
@@ -50,6 +51,7 @@ public class TimelineHelper {
 
         private final Instant startedProject;
 
+        @Nullable
         private StartedGoal startedGoal;
 
         private Instant finishedProject;
@@ -136,10 +138,15 @@ public class TimelineHelper {
         String goalName = (pluginName.equals(goal) ? pluginName : pluginName + ":" + goal)
             + (goal.equals(executionId) ? "" : "@" + executionId);
         String type = goalType(pluginArtifactId, goal);
-        CompleteGoal completeGoal = new CompleteGoal(
-            goalName, type, moduleData.startedGoal.startedGoal, Instant.now());
-        moduleData.completeGoals.add(completeGoal);
-        moduleData.startedGoal = null;
+        // may be null in case of failed execution
+        if (moduleData.startedGoal != null) {
+            CompleteGoal completeGoal = new CompleteGoal(
+                goalName, type, moduleData.startedGoal.startedGoal, Instant.now());
+            moduleData.completeGoals.add(completeGoal);
+            moduleData.startedGoal = null;
+        } else {
+            assert !success : "Missing onStart() call for successful execution";
+        }
     }
 
     static String getPluginName(String pluginArtifactId) {
