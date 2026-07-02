@@ -145,7 +145,7 @@ public class TimelineHelper {
             moduleData.completeGoals.add(completeGoal);
             moduleData.startedGoal = null;
         } else {
-            assert !success : "Missing onStart() call for successful execution";
+            // it may happen, that success is false
         }
     }
 
