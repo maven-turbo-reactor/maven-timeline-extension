@@ -7,6 +7,8 @@ import javax.inject.Named;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.SessionScoped;
 import org.apache.maven.execution.MavenSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sergey Chernov
@@ -14,6 +16,8 @@ import org.apache.maven.execution.MavenSession;
 @SessionScoped
 @Named
 public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticipant {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimelineLifecycleParticipant.class);
 
     /**
      * When set to {@code true} (as a system property, user property, or root project property),
@@ -43,6 +47,7 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
             // Skip init as the afterSessionEnd(MavenSession) is never called,
             // so should not start the daemon threads
         } else {
+            logger.info("Starting build timeline metrics gathering");
             this.timelineHelper.init();
         }
     }
@@ -83,5 +88,6 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
             String inlinedHtml = html.replace(BUILD_DATA_PLACEHOLDER, json);
             MoreFileUtils.write(buildReportHtmlFile, inlinedHtml.getBytes(StandardCharsets.UTF_8));
         }
+        logger.info("Build timeline report generated at {}", buildReportHtmlFile);
     }
 }
