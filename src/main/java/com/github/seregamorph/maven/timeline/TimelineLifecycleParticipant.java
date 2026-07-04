@@ -33,14 +33,32 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
         this.timelineHelper = timelineHelper;
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public void afterSessionStart(MavenSession session) {
+        // Implementation notice: this method is called once in CLI execution, once in Maven execution via IDEA
+        // (specifies "idea.version" property) and once in IDEA import (IDEA also specifies "idea.version" and
+        // "idea.maven.embedder.version" properties)
+        if (IdeaImportSupport.isIdeaImport(session)) {
+            // Skip init as the afterSessionEnd(MavenSession) is never called,
+            // so should not start the daemon threads
+        } else {
+            this.timelineHelper.init();
+        }
+    }
+
     @Override
     public void afterProjectsRead(MavenSession session) {
-        this.timelineHelper.init(session);
+        // Implementation notice: this method is called once in CLI execution with the whole set of modules,
+        // same for run Maven from IDEA (specifies "idea.version" property), but
+        // runs once PER EACH module during the IDEA import
     }
 
     @Override
     public void afterSessionEnd(MavenSession session) {
-        BuildData buildData = timelineHelper.complete();
+        // Implementation notice: this method is called once in CLI execution, same while running Maven from IDEA
+        // and never during the IDEA reimport
+        BuildData buildData = timelineHelper.complete(session);
         File targetDir = new File(session.getExecutionRootDirectory(), "target");
         File timelineDir = new File(targetDir, "timeline");
         timelineDir.mkdirs();

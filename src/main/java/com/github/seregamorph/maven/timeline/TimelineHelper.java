@@ -30,11 +30,6 @@ public class TimelineHelper {
     private final ResolverIoStats resolverIoStats;
 
     private Instant startTime;
-    private int modulesNumber;
-    /**
-     * If there is more than 1 module with the same artifactId, distinguish it with "${groupId}:" prefix
-     */
-    private Set<String> duplicateArtifactIds;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
     private Map<Integer, Map<GroupArtifactId, ModuleData>> threadModules;
@@ -89,20 +84,11 @@ public class TimelineHelper {
         }
     }
 
-    void init(MavenSession session) {
+    void init() {
         resolverIoStats.reset();
 
         startTime = Instant.now();
         metricsCollector = new MetricsCollector(resolverIoStats, startTime);
-        modulesNumber = session.getAllProjects().size();
-        duplicateArtifactIds = session.getAllProjects().stream()
-            .map(MavenProject::getArtifactId)
-            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-            .entrySet()
-            .stream()
-            .filter(p -> p.getValue() > 1)
-            .map(Map.Entry::getKey)
-            .collect(Collectors.toSet());
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();
         // start with 0
@@ -160,10 +146,9 @@ public class TimelineHelper {
     }
 
     /**
-     * Coarse classification of a goal, used by the report to color timeline atoms.
-     * Returns one of {@code "compile"}, {@code "test-compile"}, {@code "test"},
-     * {@code "deploy"}, or {@code "other"} for everything else
-     * (the synthetic {@code "<prepare>"} type is assigned separately).
+     * Coarse classification of a goal, used by the report to color timeline atoms. Returns one of {@code "compile"},
+     * {@code "test-compile"}, {@code "test"}, {@code "deploy"}, or {@code "other"} for everything else (the synthetic
+     * {@code "<prepare>"} type is assigned separately).
      */
     static String goalType(String pluginArtifactId, String goal) {
         switch (pluginArtifactId) {
@@ -223,12 +208,13 @@ public class TimelineHelper {
         return TimeFormatUtils.toSeconds(duration);
     }
 
-    BuildData complete() {
+    BuildData complete(MavenSession session) {
         Instant finished = Instant.now();
         BigDecimal durationSec = fromStart(finished);
         List<BuildData.Task> tasks = new ArrayList<>();
         int totalGoals = 0;
         Duration totalSerialTime = Duration.ZERO;
+        Set<String> duplicateArtifactIds = getDuplicateArtifactIds(session);
         for (Map.Entry<Integer, Map<GroupArtifactId, ModuleData>> entry : threadModules.entrySet()) {
             int threadId = entry.getKey();
             for (Map.Entry<GroupArtifactId, ModuleData> moduleDataEntry : entry.getValue().entrySet()) {
@@ -261,6 +247,7 @@ public class TimelineHelper {
             }
         }
         List<BuildData.Metric> metrics = metricsCollector.getMetrics();
+        int modulesNumber = session.getAllProjects().size();
         BuildData.Meta meta = new BuildData.Meta(
             workerThreadCounter.get(),
             modulesNumber,
@@ -272,6 +259,20 @@ public class TimelineHelper {
             tasks,
             metrics
         );
+    }
+
+    /**
+     * If there is more than 1 module with the same artifactId, distinguish it with "${groupId}:" prefix
+     */
+    private static Set<String> getDuplicateArtifactIds(MavenSession session) {
+        return session.getAllProjects().stream()
+            .map(MavenProject::getArtifactId)
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+            .entrySet()
+            .stream()
+            .filter(p -> p.getValue() > 1)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
     }
 
     private static GroupArtifactId groupArtifactId(MavenProject project) {
