@@ -147,8 +147,9 @@ public class TimelineHelper {
 
     /**
      * Coarse classification of a goal based on the lifecycle phase it is bound to, used by the report to color
-     * timeline atoms. Returns one of {@code "compile"}, {@code "test-compile"}, {@code "test"}, {@code "deploy"}, or
-     * {@code "other"} for everything else (the synthetic {@code "<prepare>"} type is assigned separately).
+     * timeline atoms. Returns one of {@code "generate-sources"}, {@code "compile"}, {@code "generate-test-sources"},
+     * {@code "test-compile"}, {@code "test"}, {@code "deploy"}, or {@code "other"} for everything else (the synthetic
+     * {@code "<prepare>"} type is assigned separately).
      *
      * @param phase the lifecycle phase the mojo is bound to, may be {@code null} for directly invoked goals
      */
@@ -157,8 +158,18 @@ public class TimelineHelper {
             return "other";
         }
         switch (phase) {
+            case "generate-sources":
+            case "process-sources":
+            case "generate-resources":
+            case "process-resources":
+                return "generate-sources";
             case "compile":
                 return "compile";
+            case "generate-test-sources":
+            case "process-test-sources":
+            case "generate-test-resources":
+            case "process-test-resources":
+                return "generate-test-sources";
             case "test-compile":
                 return "test-compile";
             case "test":

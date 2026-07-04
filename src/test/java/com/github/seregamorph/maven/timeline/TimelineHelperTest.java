@@ -14,7 +14,15 @@ class TimelineHelperTest {
 
     @Test
     public void shouldClassifyGoalType() {
+        assertEquals("generate-sources", TimelineHelper.goalType("generate-sources"));
+        assertEquals("generate-sources", TimelineHelper.goalType("process-sources"));
+        assertEquals("generate-sources", TimelineHelper.goalType("generate-resources"));
+        assertEquals("generate-sources", TimelineHelper.goalType("process-resources"));
         assertEquals("compile", TimelineHelper.goalType("compile"));
+        assertEquals("generate-test-sources", TimelineHelper.goalType("generate-test-sources"));
+        assertEquals("generate-test-sources", TimelineHelper.goalType("process-test-sources"));
+        assertEquals("generate-test-sources", TimelineHelper.goalType("generate-test-resources"));
+        assertEquals("generate-test-sources", TimelineHelper.goalType("process-test-resources"));
         assertEquals("test-compile", TimelineHelper.goalType("test-compile"));
         assertEquals("test", TimelineHelper.goalType("test"));
         assertEquals("test", TimelineHelper.goalType("integration-test"));

@@ -100,8 +100,8 @@ let tasks=[], goals=[], metrics=[], N_THREADS=0, T0=0, T1=1, totalGoals=0;
 // (a coarse classification emitted by the extension), with a per-module saturation
 // tweak so goals of the same type+module read together. Anything not in TYPE_HUE
 // (type "other", or missing) is rendered neutral gray.
-const TYPE_HUE={compile:210,"test-compile":265,test:12,deploy:140};
-const TYPE_KEYS=["compile","test-compile","test","deploy","other"];
+const TYPE_HUE={"generate-sources":175,compile:210,"generate-test-sources":315,"test-compile":265,test:12,deploy:140};
+const TYPE_KEYS=["generate-sources","compile","generate-test-sources","test-compile","test","deploy","other"];
 const OTHER_COLOR="#9aa5b1";
 // synthetic goal injected by the extension: the gap between project init and its first real goal
 const PREPARE_GOAL="<prepare>";
