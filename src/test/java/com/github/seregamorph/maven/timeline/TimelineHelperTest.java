@@ -14,17 +14,17 @@ class TimelineHelperTest {
 
     @Test
     public void shouldClassifyGoalType() {
-        assertEquals("compile", TimelineHelper.goalType("maven-compiler-plugin", "compile"));
-        assertEquals("test-compile", TimelineHelper.goalType("maven-compiler-plugin", "testCompile"));
-        assertEquals("compile", TimelineHelper.goalType("kotlin-maven-plugin", "compile"));
-        assertEquals("test-compile", TimelineHelper.goalType("kotlin-maven-plugin", "test-compile"));
-        assertEquals("test", TimelineHelper.goalType("maven-surefire-plugin", "test"));
-        assertEquals("test", TimelineHelper.goalType("maven-failsafe-plugin", "integration-test"));
-        assertEquals("deploy", TimelineHelper.goalType("maven-deploy-plugin", "deploy"));
+        assertEquals("compile", TimelineHelper.goalType("compile"));
+        assertEquals("test-compile", TimelineHelper.goalType("test-compile"));
+        assertEquals("test", TimelineHelper.goalType("test"));
+        assertEquals("test", TimelineHelper.goalType("integration-test"));
+        assertEquals("deploy", TimelineHelper.goalType("deploy"));
 
-        assertEquals("other", TimelineHelper.goalType("maven-jar-plugin", "jar"));
-        assertEquals("other", TimelineHelper.goalType("maven-install-plugin", "install"));
+        assertEquals("other", TimelineHelper.goalType("package"));
+        assertEquals("other", TimelineHelper.goalType("install"));
         // failsafe "verify" is not a test execution
-        assertEquals("other", TimelineHelper.goalType("maven-failsafe-plugin", "verify"));
+        assertEquals("other", TimelineHelper.goalType("verify"));
+        // directly invoked goals have no bound phase
+        assertEquals("other", TimelineHelper.goalType(null));
     }
 }

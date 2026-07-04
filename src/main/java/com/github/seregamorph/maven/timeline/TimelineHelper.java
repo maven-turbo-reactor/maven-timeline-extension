@@ -123,7 +123,7 @@ public class TimelineHelper {
         String executionId = event.getExecution().getExecutionId();
         String goalName = (pluginName.equals(goal) ? pluginName : pluginName + ":" + goal)
             + (goal.equals(executionId) ? "" : "@" + executionId);
-        String type = goalType(pluginArtifactId, goal);
+        String type = goalType(event.getExecution().getLifecyclePhase());
         // may be null in case of failed execution
         if (moduleData.startedGoal != null) {
             CompleteGoal completeGoal = new CompleteGoal(
@@ -146,47 +146,29 @@ public class TimelineHelper {
     }
 
     /**
-     * Coarse classification of a goal, used by the report to color timeline atoms. Returns one of {@code "compile"},
-     * {@code "test-compile"}, {@code "test"}, {@code "deploy"}, or {@code "other"} for everything else (the synthetic
-     * {@code "<prepare>"} type is assigned separately).
+     * Coarse classification of a goal based on the lifecycle phase it is bound to, used by the report to color
+     * timeline atoms. Returns one of {@code "compile"}, {@code "test-compile"}, {@code "test"}, {@code "deploy"}, or
+     * {@code "other"} for everything else (the synthetic {@code "<prepare>"} type is assigned separately).
+     *
+     * @param phase the lifecycle phase the mojo is bound to, may be {@code null} for directly invoked goals
      */
-    static String goalType(String pluginArtifactId, String goal) {
-        switch (pluginArtifactId) {
-            case "maven-compiler-plugin":
-                if ("compile".equals(goal)) {
-                    return "compile";
-                }
-                if ("testCompile".equals(goal)) {
-                    return "test-compile";
-                }
-                break;
-            case "kotlin-maven-plugin":
-                if ("compile".equals(goal)) {
-                    return "compile";
-                }
-                if ("test-compile".equals(goal)) {
-                    return "test-compile";
-                }
-                break;
-            case "maven-surefire-plugin":
-                if ("test".equals(goal)) {
-                    return "test";
-                }
-                break;
-            case "maven-failsafe-plugin":
-                if ("integration-test".equals(goal)) {
-                    return "test";
-                }
-                break;
-            case "maven-deploy-plugin":
-                if ("deploy".equals(goal)) {
-                    return "deploy";
-                }
-                break;
-            default:
-                break;
+    static String goalType(@Nullable String phase) {
+        if (phase == null) {
+            return "other";
         }
-        return "other";
+        switch (phase) {
+            case "compile":
+                return "compile";
+            case "test-compile":
+                return "test-compile";
+            case "test":
+            case "integration-test":
+                return "test";
+            case "deploy":
+                return "deploy";
+            default:
+                return "other";
+        }
     }
 
     void onComplete(ProjectExecutionEvent event, boolean success) {
