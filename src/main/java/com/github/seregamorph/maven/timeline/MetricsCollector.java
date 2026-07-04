@@ -44,12 +44,6 @@ public class MetricsCollector {
     // @GuardedBy("metrics")
     private Long gcCount = null;
 
-    // @GuardedBy("metrics")
-    private Instant lastSampleTime = null;
-    // @GuardedBy("metrics")
-    private long lastDownloadedBytes = 0L;
-    // @GuardedBy("metrics")
-    private long lastUploadedBytes = 0L;
     // last valid CPU readings, carried forward whenever the bean reports a negative
     // @GuardedBy("metrics")
     private double lastSystemCpuLoad = 0d;
@@ -96,16 +90,9 @@ public class MetricsCollector {
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
-        // resolver I/O rate (MB/s) over the actual elapsed interval since the previous sample
-        long downloadedBytes = resolverIoStats.getDownloadedBytes();
-        long uploadedBytes = resolverIoStats.getUploadedBytes();
-        double elapsedSeconds = lastSampleTime == null
-            ? 0d : Duration.between(lastSampleTime, now).toNanos() / 1_000_000_000d;
-        BigDecimal resolverDownload = megabytesPerSecond(downloadedBytes - lastDownloadedBytes, elapsedSeconds);
-        BigDecimal resolverUpload = megabytesPerSecond(uploadedBytes - lastUploadedBytes, elapsedSeconds);
-        lastSampleTime = now;
-        lastDownloadedBytes = downloadedBytes;
-        lastUploadedBytes = uploadedBytes;
+        // resolver I/O rates are filled in as a post-processing step (see fillResolverRates),
+        // since a transfer's throughput must be spread across the sampling windows it spans -
+        // including ones already emitted before the transfer completed
         return new BuildData.Metric(
             fromStart(now),
             activeTasks.get(),
@@ -115,8 +102,8 @@ public class MetricsCollector {
             cpuPercent(processCpuLoad),
             cpuPercent(systemCpuLoad),
             threads + daemonThreads,
-            resolverDownload,
-            resolverUpload
+            BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP),
+            BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP)
         );
     }
 
@@ -138,8 +125,67 @@ public class MetricsCollector {
             }
             lastMetric.setGc(false);
 
+            fillResolverRates(result, resolverIoStats.getTransfers());
+
             metrics.notify();
             return result;
+        }
+    }
+
+    /**
+     * Fills the resolver download/upload MB/s of each metric sample by spreading every
+     * recorded transfer's bytes uniformly across its {@code [start, finish]} interval. A
+     * sample at time {@code t[i]} covers the window {@code (t[i-1], t[i]]}; a transfer
+     * contributes to that window in proportion to how much of its duration overlaps it, so
+     * a long download reads as a sustained plateau at its average throughput rather than a
+     * single momentary spike in the window where it completed.
+     */
+    private void fillResolverRates(List<BuildData.Metric> metrics, List<ResolverIoStats.Transfer> transfers) {
+        int n = metrics.size();
+        // window boundaries in seconds since build start (t[0] is the first sample)
+        double[] times = new double[n];
+        for (int i = 0; i < n; i++) {
+            times[i] = metrics.get(i).getT().doubleValue();
+        }
+        double[] downloadBytes = new double[n];
+        double[] uploadBytes = new double[n];
+        for (ResolverIoStats.Transfer transfer : transfers) {
+            double start = fromStart(transfer.start).doubleValue();
+            double finish = fromStart(transfer.finish).doubleValue();
+            double[] bucket = transfer.upload ? uploadBytes : downloadBytes;
+            distribute(times, bucket, start, finish, transfer.bytes);
+        }
+        for (int i = 0; i < n; i++) {
+            double windowSeconds = i == 0 ? 0d : times[i] - times[i - 1];
+            metrics.get(i).setResolverDownload(megabytesPerSecond(downloadBytes[i], windowSeconds));
+            metrics.get(i).setResolverUpload(megabytesPerSecond(uploadBytes[i], windowSeconds));
+        }
+    }
+
+    /**
+     * Distributes {@code bytes} transferred over {@code [start, finish]} into the sample
+     * windows {@code (times[i-1], times[i]]}, proportionally to the overlap of each window
+     * with the transfer interval.
+     */
+    private static void distribute(double[] times, double[] bucket, double start, double finish, long bytes) {
+        int n = times.length;
+        double duration = finish - start;
+        if (duration <= 1e-6) {
+            // instantaneous (or missing start): attribute everything to the window containing finish
+            for (int i = 1; i < n; i++) {
+                if (finish <= times[i] || i == n - 1) {
+                    bucket[i] += bytes;
+                    return;
+                }
+            }
+            return;
+        }
+        double bytesPerSecond = bytes / duration;
+        for (int i = 1; i < n; i++) {
+            double overlap = Math.min(finish, times[i]) - Math.max(start, times[i - 1]);
+            if (overlap > 0d) {
+                bucket[i] += bytesPerSecond * overlap;
+            }
         }
     }
 
@@ -152,11 +198,11 @@ public class MetricsCollector {
         return BigDecimal.valueOf(bytes / 1024 / 1024);
     }
 
-    private static BigDecimal megabytesPerSecond(long deltaBytes, double seconds) {
-        if (deltaBytes <= 0 || seconds <= 0d) {
+    private static BigDecimal megabytesPerSecond(double bytes, double seconds) {
+        if (bytes <= 0d || seconds <= 0d) {
             return BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP);
         }
-        double megabytesPerSecond = deltaBytes / (1024d * 1024d) / seconds;
+        double megabytesPerSecond = bytes / (1024d * 1024d) / seconds;
         return BigDecimal.valueOf(megabytesPerSecond).setScale(3, RoundingMode.HALF_UP);
     }
 

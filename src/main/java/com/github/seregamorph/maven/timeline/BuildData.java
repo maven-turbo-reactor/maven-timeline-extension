@@ -203,8 +203,9 @@ public final class BuildData {
         private final BigDecimal processCpu;
         private final BigDecimal systemCpu;
         private final int threads;
-        private final BigDecimal resolverDownload;
-        private final BigDecimal resolverUpload;
+        // computed as a post-processing step from recorded transfer intervals, hence mutable
+        private BigDecimal resolverDownload;
+        private BigDecimal resolverUpload;
 
         @JsonCreator
         public Metric(
@@ -271,8 +272,16 @@ public final class BuildData {
             return resolverDownload;
         }
 
+        public void setResolverDownload(BigDecimal resolverDownload) {
+            this.resolverDownload = resolverDownload;
+        }
+
         public BigDecimal getResolverUpload() {
             return resolverUpload;
+        }
+
+        public void setResolverUpload(BigDecimal resolverUpload) {
+            this.resolverUpload = resolverUpload;
         }
     }
 
