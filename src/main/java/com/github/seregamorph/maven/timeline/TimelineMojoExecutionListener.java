@@ -22,16 +22,22 @@ public class TimelineMojoExecutionListener implements MojoExecutionListener {
 
     @Override
     public void beforeMojoExecution(MojoExecutionEvent event) {
-        timelineHelper.onStart(event);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onStart(event);
+        }
     }
 
     @Override
     public void afterMojoExecutionSuccess(MojoExecutionEvent event) {
-        timelineHelper.onComplete(event, true);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onComplete(event, true);
+        }
     }
 
     @Override
     public void afterExecutionFailure(MojoExecutionEvent event) {
-        timelineHelper.onComplete(event, false);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onComplete(event, false);
+        }
     }
 }

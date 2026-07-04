@@ -58,6 +58,10 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
     public void afterSessionEnd(MavenSession session) {
         // Implementation notice: this method is called once in CLI execution, same while running Maven from IDEA
         // and never during the IDEA reimport
+        if (!timelineHelper.isInitialized()) {
+            // Return to reinsure avoiding failure
+            return;
+        }
         BuildData buildData = timelineHelper.complete(session);
         File targetDir = new File(session.getExecutionRootDirectory(), "target");
         File timelineDir = new File(targetDir, "timeline");

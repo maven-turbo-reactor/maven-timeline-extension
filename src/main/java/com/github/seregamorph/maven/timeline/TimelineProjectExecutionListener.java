@@ -22,7 +22,9 @@ public class TimelineProjectExecutionListener implements ProjectExecutionListene
 
     @Override
     public void beforeProjectExecution(ProjectExecutionEvent event) {
-        timelineHelper.onStart(event);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onStart(event);
+        }
     }
 
     @Override
@@ -31,11 +33,15 @@ public class TimelineProjectExecutionListener implements ProjectExecutionListene
 
     @Override
     public void afterProjectExecutionSuccess(ProjectExecutionEvent event) {
-        timelineHelper.onComplete(event, true);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onComplete(event, true);
+        }
     }
 
     @Override
     public void afterProjectExecutionFailure(ProjectExecutionEvent event) {
-        timelineHelper.onComplete(event, false);
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.onComplete(event, false);
+        }
     }
 }

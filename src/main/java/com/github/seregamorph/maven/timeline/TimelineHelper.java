@@ -29,6 +29,7 @@ public class TimelineHelper {
     public static final String PREPARE_GOAL = "<prepare>";
     private final ResolverIoStats resolverIoStats;
 
+    private boolean initialized;
     private Instant startTime;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
@@ -84,6 +85,10 @@ public class TimelineHelper {
         }
     }
 
+    boolean isInitialized() {
+        return initialized;
+    }
+
     void init() {
         resolverIoStats.reset();
 
@@ -95,6 +100,7 @@ public class TimelineHelper {
         currentWorkerThreadId = ThreadLocal.withInitial(workerThreadCounter::getAndIncrement);
         threadModules = Collections.synchronizedMap(new LinkedHashMap<>());
         metricsCollector.start();
+        initialized = true;
     }
 
     void onStart(ProjectExecutionEvent event) {
