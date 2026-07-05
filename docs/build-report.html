@@ -36,6 +36,9 @@
   .lane-label { fill: var(--muted); font-size: 11px; }
   .task rect { rx: 2; cursor: pointer; }
   .task rect:hover { stroke: #1f2933; stroke-width: 1.5; }
+  /* outline framing every goal of the hovered goal's module (incl. <prepare>) */
+  .module-frame { fill: rgba(31,41,51,.05); stroke: #1f2933; stroke-width: 1.5;
+    pointer-events: none; opacity: 0; }
   .task text { font-size: 10px; fill: #fff; pointer-events: none; }
   .crosshair { stroke: var(--crosshair); stroke-width: 1; stroke-dasharray: 3 2; pointer-events: none; opacity: 0; }
   .zoom-overlay { fill: none; pointer-events: all; cursor: crosshair; }
@@ -1627,6 +1630,9 @@ function buildGantt(){
   const xAxisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
   const labels=g.append("g");
   const bars=g.append("g").attr("clip-path","url(#clipG)");
+  // outline drawn around every goal of the hovered goal's module; sits above the
+  // bars so its stroke reads clearly, below the crosshair/overlay so it never eats events
+  const frame=g.append("rect").attr("class","module-frame");
   const defs=svg.append("defs");
   defs.append("clipPath").attr("id","clipG")
     .append("rect").attr("width",innerW).attr("height",innerH);
@@ -1647,6 +1653,21 @@ function buildGantt(){
 
   const crosshair=g.append("line").attr("class","crosshair").attr("y1",0).attr("y2",innerH);
   g.append("rect").attr("class","zoom-overlay").attr("width",innerW).attr("height",innerH);
+
+  // module currently framed (set by hover); {module,thread} or null. kept as state so the
+  // frame follows zoom/pan re-renders, mirroring the crosshair/tip behavior.
+  let frameKey=null;
+  function drawFrame(){
+    if(!frameKey){frame.style("opacity",0);return;}
+    const gs=goals.filter(d=>d.module===frameKey.module&&d.thread===frameKey.thread);
+    if(!gs.length){frame.style("opacity",0);return;}
+    const s=d3.min(gs,d=>d.start), e=d3.max(gs,d=>d.end);
+    const x0=Math.max(0,xz(s)), x1=Math.min(innerW,xz(e));
+    if(x1<=0||x0>=innerW){frame.style("opacity",0);return;}
+    frame.attr("x",x0).attr("y",frameKey.thread*(LANE_H+GAP)-1)
+      .attr("width",Math.max(1,x1-x0)).attr("height",LANE_H+2)
+      .attr("rx",3).style("opacity",1);
+  }
 
   function draw(){
     const xAxis=d3.axisBottom(xz).ticks(10).tickFormat(fmtAxis);
@@ -1677,6 +1698,7 @@ function buildGantt(){
       // white label reads cleanly on the inverted (darker) hatch
       .text(d=>{const w=Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start));
         if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.module;});
+    drawFrame();
   }
 
   svg.select(".zoom-overlay")
@@ -1686,6 +1708,10 @@ function buildGantt(){
       // hit-test the goal rectangle under the cursor (the overlay sits above the bars)
       const lane=Math.floor(py/(LANE_H+GAP)), tm=xz.invert(px);
       const hit=(lane>=0&&lane<N_THREADS)?goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm):null;
+      const key=hit?{module:hit.module,thread:hit.thread}:null;
+      if((key&&key.module)!==(frameKey&&frameKey.module)||(key&&key.thread)!==(frameKey&&frameKey.thread)){
+        frameKey=key; drawFrame();
+      }
       if(hit) showTip(
         `<b>${esc(hit.module)}</b>`+
         `<br><b>${esc(hit.goal)}</b>`+
@@ -1695,7 +1721,7 @@ function buildGantt(){
         (isPrepare(hit)?`<br><span class="row" style="color:#ffd479">synthetic · project init → first goal</span>`:""),ev);
       else hideTip();
     })
-    .on("pointerleave.cross",()=>{moveCrosshair(null);hideTip();});
+    .on("pointerleave.cross",()=>{moveCrosshair(null);hideTip();frameKey=null;drawFrame();});
   applyZoomBehavior(svg,innerW,innerH);
   return {draw,crosshair,innerW};
 }
