@@ -129,7 +129,8 @@ public class TimelineHelper {
         String executionId = event.getExecution().getExecutionId();
         String goalName = (pluginName.equals(goal) ? pluginName : pluginName + ":" + goal)
             + (goal.equals(executionId) ? "" : "@" + executionId);
-        String type = goalType(event.getExecution().getLifecyclePhase());
+        String phase = MojoUtils.getMojoPhase(event.getExecution());
+        String type = goalType(phase);
         // may be null in case of failed execution
         if (moduleData.startedGoal != null) {
             CompleteGoal completeGoal = new CompleteGoal(
