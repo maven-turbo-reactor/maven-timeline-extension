@@ -12,11 +12,15 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sergey Chernov
  */
 public class MetricsCollector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsCollector.class);
 
     private static final long CYCLE_INTERVAL_MS = 250L;
 
@@ -53,6 +57,7 @@ public class MetricsCollector {
         this.resolverIoStats = resolverIoStats;
         // first metric
         BuildData.Metric firstMetric;
+        LOGGER.debug("Scraping first metric");
         synchronized (metrics) {
             firstMetric = scrapeMetrics();
         }
@@ -66,8 +71,15 @@ public class MetricsCollector {
                         return;
                     }
                     if (active) {
-                        BuildData.Metric metric = scrapeMetrics();
-                        metrics.add(metric);
+                        LOGGER.debug("Scraping {} metric", metrics.size());
+                        try {
+                            BuildData.Metric metric = scrapeMetrics();
+                            metrics.add(metric);
+                        } catch (Throwable e) {
+                            LOGGER.warn("Error while adding metric: {}", e.toString());
+                        }
+                    } else {
+                        LOGGER.debug("Exit adding metric");
                     }
                 }
             }
@@ -81,12 +93,14 @@ public class MetricsCollector {
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
         long heapCommittedBytes = memoryMXBean.getHeapMemoryUsage().getCommitted();
         double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
+        if (Double.isNaN(processCpuLoad)) {
+            processCpuLoad = 0d;
+        }
+        // Hint: the javadoc specifies possible negative value if it's not available,
+        // but in practice it can be either 0.0d or NaN, this happened at least with Corretto
         double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
-        // recent CPU usage as a fraction [0.0, 1.0]; both return a negative value when
-        // not available (the first sample, but also intermittently mid-run — especially
-        // the system-wide reading on macOS / in containers). Carry the last valid value
-        // forward in that case, otherwise a momentary gap would read as an impossible 0%.
-        systemCpuLoad = lastSystemCpuLoad = systemCpuLoad <= 0 ? lastSystemCpuLoad : systemCpuLoad;
+        systemCpuLoad = lastSystemCpuLoad = Double.isNaN(systemCpuLoad) || systemCpuLoad <= 0.0d
+            ? lastSystemCpuLoad : systemCpuLoad;
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
