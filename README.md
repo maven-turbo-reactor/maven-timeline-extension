@@ -20,7 +20,7 @@ To set up the extension add to `.mvn/extensions.xml` in the root of the project
         <!-- https://github.com/maven-turbo-reactor/maven-timeline-extension -->
         <groupId>com.github.seregamorph</groupId>
         <artifactId>maven-timeline-extension</artifactId>
-        <version>0.2</version>
+        <version>0.3</version>
     </extension>
 </extensions>
 ```
