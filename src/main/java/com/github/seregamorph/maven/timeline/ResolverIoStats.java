@@ -1,6 +1,5 @@
 package com.github.seregamorph.maven.timeline;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,21 +28,21 @@ public class ResolverIoStats {
      */
     static final class Transfer {
 
-        final Instant start;
-        final Instant finish;
+        final long startNanos;
+        final long finishNanos;
         final long bytes;
         final boolean upload;
 
-        Transfer(Instant start, Instant finish, long bytes, boolean upload) {
-            this.start = start;
-            this.finish = finish;
+        Transfer(long startNanos, long finishNanos, long bytes, boolean upload) {
+            this.startNanos = startNanos;
+            this.finishNanos = finishNanos;
             this.bytes = bytes;
             this.upload = upload;
         }
     }
 
     // transfers in progress, keyed by a caller-provided identity (artifact/metadata + direction)
-    private final Map<String, Instant> inFlight = new ConcurrentHashMap<>();
+    private final Map<String, Long> inFlight = new ConcurrentHashMap<>();
     private final List<Transfer> transfers = Collections.synchronizedList(new ArrayList<>());
 
     void reset() {
@@ -56,7 +55,7 @@ public class ResolverIoStats {
      * same key keep the earliest timestamp.
      */
     void startTransfer(String key) {
-        inFlight.putIfAbsent(key, Instant.now());
+        inFlight.putIfAbsent(key, System.nanoTime());
     }
 
     /**
@@ -65,12 +64,12 @@ public class ResolverIoStats {
      * transfer is recorded as instantaneous.
      */
     void finishTransfer(String key, long bytes, boolean upload) {
-        Instant start = inFlight.remove(key);
+        Long startNanos = inFlight.remove(key);
         if (bytes <= 0) {
             return;
         }
-        Instant finish = Instant.now();
-        transfers.add(new Transfer(start == null ? finish : start, finish, bytes, upload));
+        long finishNanos = System.nanoTime();
+        transfers.add(new Transfer(startNanos == null ? finishNanos : startNanos, finishNanos, bytes, upload));
     }
 
     List<Transfer> getTransfers() {

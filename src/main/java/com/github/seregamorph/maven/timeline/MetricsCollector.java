@@ -7,8 +7,6 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.ThreadMXBean;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,7 +37,7 @@ public class MetricsCollector {
 
     private final ResolverIoStats resolverIoStats;
 
-    private final Instant startTime;
+    private final long startNanos;
     private final Thread worker;
 
     // @GuardedBy("metrics")
@@ -52,8 +50,8 @@ public class MetricsCollector {
     // @GuardedBy("metrics")
     private double lastSystemCpuLoad = 0d;
 
-    public MetricsCollector(ResolverIoStats resolverIoStats, Instant startTime) {
-        this.startTime = startTime;
+    public MetricsCollector(ResolverIoStats resolverIoStats, long startNanos) {
+        this.startNanos = startNanos;
         this.resolverIoStats = resolverIoStats;
         // first metric
         BuildData.Metric firstMetric;
@@ -87,7 +85,7 @@ public class MetricsCollector {
     }
 
     private BuildData.Metric scrapeMetrics() {
-        Instant now = Instant.now();
+        long nowNanos = System.nanoTime();
         int threads = threadMXBean.getThreadCount();
         int daemonThreads = threadMXBean.getDaemonThreadCount();
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
@@ -108,7 +106,7 @@ public class MetricsCollector {
         // since a transfer's throughput must be spread across the sampling windows it spans -
         // including ones already emitted before the transfer completed
         return new BuildData.Metric(
-            fromStart(now),
+            fromStart(nowNanos),
             activeTasks.get(),
             megabytes(heapUsedBytes),
             megabytes(heapCommittedBytes),
@@ -164,8 +162,8 @@ public class MetricsCollector {
         double[] downloadBytes = new double[n];
         double[] uploadBytes = new double[n];
         for (ResolverIoStats.Transfer transfer : transfers) {
-            double start = fromStart(transfer.start).doubleValue();
-            double finish = fromStart(transfer.finish).doubleValue();
+            double start = fromStart(transfer.startNanos).doubleValue();
+            double finish = fromStart(transfer.finishNanos).doubleValue();
             double[] bucket = transfer.upload ? uploadBytes : downloadBytes;
             distribute(times, bucket, start, finish, transfer.bytes);
         }
@@ -203,9 +201,9 @@ public class MetricsCollector {
         }
     }
 
-    private BigDecimal fromStart(Instant time) {
-        Duration duration = Duration.between(startTime, time);
-        return TimeFormatUtils.toSeconds(duration);
+    private BigDecimal fromStart(long timeNanos) {
+        long durationNanos = timeNanos - startNanos;
+        return TimeFormatUtils.toSeconds(durationNanos);
     }
 
     private static BigDecimal megabytes(long bytes) {
