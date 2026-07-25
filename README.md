@@ -2,9 +2,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 # Maven Timeline extension
-This extension generated built task timeline which shows how maven worker threads are actually loaded while building
-the project. Also it shows aligned CPU, heap, threds and resolver IO charts. The timeline can be zoomed to see smaller
-details. Beyond the maven goal execution the timeline has the "preparation" phase of any module which is mostly
+This extension generates Maven build task timeline report which shows how the worker threads are actually loaded while
+building the project. Also, it shows aligned CPU, heap, threads and resolver IO charts. The timeline can be zoomed to see smaller
+details. Before the maven goal execution the timeline has the "preparation" phase of any module which is mostly
 resolving the dependencies.
 
 The sample report [preview](https://maven-turbo-reactor.github.io/maven-timeline-extension/build-report.html):

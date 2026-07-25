@@ -2,7 +2,6 @@ package com.github.seregamorph.maven.timeline;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,7 +29,7 @@ public class TimelineHelper {
     private final ResolverIoStats resolverIoStats;
 
     private boolean initialized;
-    private Instant startTime;
+    private long startNanos;
     private AtomicInteger workerThreadCounter;
     private ThreadLocal<Integer> currentWorkerThreadId;
     private Map<Integer, Map<GroupArtifactId, ModuleData>> threadModules;
@@ -45,23 +44,23 @@ public class TimelineHelper {
 
         private final List<CompleteGoal> completeGoals = new ArrayList<>();
 
-        private final Instant startedProject;
+        private final long startedNanosProject;
 
         @Nullable
         private StartedGoal startedGoal;
 
-        private Instant finishedProject;
+        private long finishedNanosProject;
 
-        private ModuleData(Instant startedProject) {
-            this.startedProject = startedProject;
+        private ModuleData(long startedNanosProject) {
+            this.startedNanosProject = startedNanosProject;
         }
     }
 
     private static class StartedGoal {
-        private final Instant startedGoal;
+        private final long startedNanosGoal;
 
-        private StartedGoal(Instant startedGoal) {
-            this.startedGoal = startedGoal;
+        private StartedGoal(long startedNanosGoal) {
+            this.startedNanosGoal = startedNanosGoal;
         }
     }
 
@@ -74,14 +73,14 @@ public class TimelineHelper {
          * Coarse goal classification used to color the timeline, see {@link #goalType}.
          */
         private final String type;
-        private final Instant started;
-        private final Instant finished;
+        private final long startedNanos;
+        private final long finishedNanos;
 
-        private CompleteGoal(String name, String type, Instant started, Instant finished) {
+        private CompleteGoal(String name, String type, long startedNanos, long finishedNanos) {
             this.name = name;
             this.type = type;
-            this.started = started;
-            this.finished = finished;
+            this.startedNanos = startedNanos;
+            this.finishedNanos = finishedNanos;
         }
     }
 
@@ -92,8 +91,8 @@ public class TimelineHelper {
     void init() {
         resolverIoStats.reset();
 
-        startTime = Instant.now();
-        metricsCollector = new MetricsCollector(resolverIoStats, startTime);
+        startNanos = System.nanoTime();
+        metricsCollector = new MetricsCollector(resolverIoStats, startNanos);
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();
         // start with 0
@@ -114,9 +113,9 @@ public class TimelineHelper {
         if (moduleData.completeGoals.isEmpty()) {
             // add fake "pre-execution" phase
             moduleData.completeGoals.add(new CompleteGoal(
-                PREPARE_GOAL, PREPARE_GOAL, moduleData.startedProject, Instant.now()));
+                PREPARE_GOAL, PREPARE_GOAL, moduleData.startedNanosProject, System.nanoTime()));
         }
-        moduleData.startedGoal = new StartedGoal(Instant.now());
+        moduleData.startedGoal = new StartedGoal(System.nanoTime());
     }
 
     void onComplete(MojoExecutionEvent event, boolean success) {
@@ -134,7 +133,7 @@ public class TimelineHelper {
         // may be null in case of failed execution
         if (moduleData.startedGoal != null) {
             CompleteGoal completeGoal = new CompleteGoal(
-                goalName, type, moduleData.startedGoal.startedGoal, Instant.now());
+                goalName, type, moduleData.startedGoal.startedNanosGoal, System.nanoTime());
             moduleData.completeGoals.add(completeGoal);
             moduleData.startedGoal = null;
         } else {
@@ -192,7 +191,7 @@ public class TimelineHelper {
     void onComplete(ProjectExecutionEvent event, boolean success) {
         metricsCollector.decActiveTasks();
         ModuleData moduleData = getModuleData(event.getProject());
-        moduleData.finishedProject = Instant.now();
+        moduleData.finishedNanosProject = System.nanoTime();
     }
 
     private ModuleData getModuleData(MavenProject project) {
@@ -200,17 +199,17 @@ public class TimelineHelper {
             $ -> Collections.synchronizedMap(new LinkedHashMap<>()));
         GroupArtifactId groupArtifactId = groupArtifactId(project);
         // there should be no contention on moduleData as reactor builds them in a single thread
-        return modules.computeIfAbsent(groupArtifactId, $ -> new ModuleData(Instant.now()));
+        return modules.computeIfAbsent(groupArtifactId, $ -> new ModuleData(System.nanoTime()));
     }
 
-    private BigDecimal fromStart(Instant time) {
-        Duration duration = Duration.between(startTime, time);
-        return TimeFormatUtils.toSeconds(duration);
+    private BigDecimal fromStart(long timeNanos) {
+        long durationNanos = timeNanos - startNanos;
+        return TimeFormatUtils.toSeconds(durationNanos);
     }
 
     BuildData complete(MavenSession session) {
-        Instant finished = Instant.now();
-        BigDecimal durationSec = fromStart(finished);
+        long finishedNanos = System.nanoTime();
+        BigDecimal durationSec = fromStart(finishedNanos);
         List<BuildData.Task> tasks = new ArrayList<>();
         int totalGoals = 0;
         Duration totalSerialTime = Duration.ZERO;
@@ -226,13 +225,13 @@ public class TimelineHelper {
                         totalGoals++;
                     }
                     totalSerialTime = totalSerialTime.plus(
-                        Duration.between(completeGoal.started, completeGoal.finished));
+                        Duration.ofNanos(completeGoal.finishedNanos - completeGoal.startedNanos));
                     goals.add(new BuildData.Goal(
                         completeGoal.name,
                         completeGoal.type,
-                        fromStart(completeGoal.started),
-                        fromStart(completeGoal.finished),
-                        TimeFormatUtils.toSeconds(Duration.between(completeGoal.started, completeGoal.finished))
+                        fromStart(completeGoal.startedNanos),
+                        fromStart(completeGoal.finishedNanos),
+                        TimeFormatUtils.toSeconds(completeGoal.finishedNanos - completeGoal.startedNanos)
                     ));
                 }
                 String moduleName = duplicateArtifactIds.contains(groupArtifactId.artifactId()) ?
@@ -240,8 +239,8 @@ public class TimelineHelper {
                 tasks.add(new BuildData.Task(
                     moduleName,
                     threadId,
-                    fromStart(moduleData.startedProject), fromStart(moduleData.finishedProject),
-                    TimeFormatUtils.toSeconds(Duration.between(moduleData.startedProject, moduleData.finishedProject)),
+                    fromStart(moduleData.startedNanosProject), fromStart(moduleData.finishedNanosProject),
+                    TimeFormatUtils.toSeconds(moduleData.finishedNanosProject - moduleData.startedNanosProject),
                     goals
                 ));
             }
