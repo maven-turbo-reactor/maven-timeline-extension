@@ -102,19 +102,22 @@ public class TimelineHelper {
         initialized = true;
     }
 
-    void onStart(ProjectExecutionEvent event) {
+    void beforeProjectExecution(ProjectExecutionEvent event) {
         metricsCollector.incActiveTasks();
         // initializes ModuleData.startedProject
         getModuleData(event.getProject());
     }
 
-    void onStart(MojoExecutionEvent event) {
+    void beforeProjectLifecycleExecution(ProjectExecutionEvent event) {
+        // duration between beforeProjectExecution and beforeProjectLifecycleExecution is a preparation phase,
+        // before any plugin goal is executed
         ModuleData moduleData = getModuleData(event.getProject());
-        if (moduleData.completeGoals.isEmpty()) {
-            // add fake "pre-execution" phase
-            moduleData.completeGoals.add(new CompleteGoal(
-                PREPARE_GOAL, PREPARE_GOAL, moduleData.startedNanosProject, System.nanoTime()));
-        }
+        moduleData.completeGoals.add(new CompleteGoal(
+            PREPARE_GOAL, PREPARE_GOAL, moduleData.startedNanosProject, System.nanoTime()));
+    }
+
+    void beforeProjectExecution(MojoExecutionEvent event) {
+        ModuleData moduleData = getModuleData(event.getProject());
         moduleData.startedGoal = new StartedGoal(System.nanoTime());
     }
 

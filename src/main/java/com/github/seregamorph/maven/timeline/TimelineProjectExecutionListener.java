@@ -23,12 +23,15 @@ public class TimelineProjectExecutionListener implements ProjectExecutionListene
     @Override
     public void beforeProjectExecution(ProjectExecutionEvent event) {
         if (timelineHelper.isInitialized()) {
-            timelineHelper.onStart(event);
+            timelineHelper.beforeProjectExecution(event);
         }
     }
 
     @Override
     public void beforeProjectLifecycleExecution(ProjectExecutionEvent event) {
+        if (timelineHelper.isInitialized()) {
+            timelineHelper.beforeProjectLifecycleExecution(event);
+        }
     }
 
     @Override

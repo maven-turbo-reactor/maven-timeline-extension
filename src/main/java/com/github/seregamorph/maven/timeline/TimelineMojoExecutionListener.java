@@ -23,7 +23,7 @@ public class TimelineMojoExecutionListener implements MojoExecutionListener {
     @Override
     public void beforeMojoExecution(MojoExecutionEvent event) {
         if (timelineHelper.isInitialized()) {
-            timelineHelper.onStart(event);
+            timelineHelper.beforeProjectExecution(event);
         }
     }
 
