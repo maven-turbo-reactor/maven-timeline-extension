@@ -1,5 +1,6 @@
 package com.github.seregamorph.maven.timeline;
 
+import javax.annotation.Nullable;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 
@@ -8,7 +9,7 @@ import org.apache.maven.project.MavenProject;
  */
 public final class MavenPropertyUtils {
 
-    // @Nullable
+    @Nullable
     public static String getProperty(MavenSession session, String propertyName) {
         String propertyValue = session.getSystemProperties().getProperty(propertyName);
         if (propertyValue == null) {
@@ -17,7 +18,7 @@ public final class MavenPropertyUtils {
         return propertyValue;
     }
 
-    // @Nullable
+    @Nullable
     public static String getProperty(MavenSession session, MavenProject project, String propertyName) {
         String propertyValue = getProperty(session, propertyName);
         if (propertyValue == null) {

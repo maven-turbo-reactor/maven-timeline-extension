@@ -2,6 +2,9 @@ package com.github.seregamorph.maven.timeline;
 
 import org.apache.maven.execution.MavenSession;
 
+/**
+ * @author Sergey Chernov
+ */
 final class IdeaImportSupport {
 
     static boolean isIdeaImport(MavenSession session) {
