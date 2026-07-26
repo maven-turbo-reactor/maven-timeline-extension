@@ -37,14 +37,14 @@ public class TimelineProjectExecutionListener implements ProjectExecutionListene
     @Override
     public void afterProjectExecutionSuccess(ProjectExecutionEvent event) {
         if (timelineHelper.isInitialized()) {
-            timelineHelper.onComplete(event, true);
+            timelineHelper.onCompleteProject(event, true);
         }
     }
 
     @Override
     public void afterProjectExecutionFailure(ProjectExecutionEvent event) {
         if (timelineHelper.isInitialized()) {
-            timelineHelper.onComplete(event, false);
+            timelineHelper.onCompleteProject(event, false);
         }
     }
 }

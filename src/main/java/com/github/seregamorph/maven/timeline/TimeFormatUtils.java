@@ -10,10 +10,10 @@ import java.time.Duration;
 public final class TimeFormatUtils {
 
     public static BigDecimal toSeconds(Duration duration) {
-        return toSeconds(duration.toNanos());
+        return nanosToSeconds(duration.toNanos());
     }
 
-    public static BigDecimal toSeconds(long durationNanos) {
+    public static BigDecimal nanosToSeconds(long durationNanos) {
         return BigDecimal.valueOf(durationNanos).divide(BigDecimal.valueOf(1000_000_000L), 6, RoundingMode.HALF_UP);
     }
 

@@ -203,7 +203,7 @@ public class MetricsCollector {
 
     private BigDecimal fromStart(long timeNanos) {
         long durationNanos = timeNanos - startNanos;
-        return TimeFormatUtils.toSeconds(durationNanos);
+        return TimeFormatUtils.nanosToSeconds(durationNanos);
     }
 
     private static BigDecimal megabytes(long bytes) {
