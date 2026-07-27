@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import org.apache.maven.eventspy.EventSpy;
+import org.apache.maven.execution.ExecutionEvent;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.metadata.Metadata;
@@ -24,11 +25,11 @@ import org.eclipse.aether.repository.ArtifactRepository;
 @Singleton
 public class TimelineEventSpy implements EventSpy {
 
-    private final ResolverIoStats resolverIoStats;
+    private final TimelineHelper timelineHelper;
 
     @Inject
-    public TimelineEventSpy(ResolverIoStats resolverIoStats) {
-        this.resolverIoStats = resolverIoStats;
+    public TimelineEventSpy(TimelineHelper timelineHelper) {
+        this.timelineHelper = timelineHelper;
     }
 
     @Override
@@ -38,25 +39,39 @@ public class TimelineEventSpy implements EventSpy {
 
     @Override
     public void onEvent(Object event) {
+        if (event instanceof ExecutionEvent) {
+            ExecutionEvent executionEvent = (ExecutionEvent) event;
+            switch (executionEvent.getType()) {
+                case MojoStarted:
+                    timelineHelper.onMojoStarted(executionEvent);
+                    break;
+                case MojoSucceeded:
+                case MojoFailed:
+                    timelineHelper.onMojoComplete(executionEvent,
+                        executionEvent.getType() == ExecutionEvent.Type.MojoSucceeded);
+                    break;
+            }
+        }
+
         if (event instanceof RepositoryEvent) {
             RepositoryEvent repositoryEvent = (RepositoryEvent) event;
             switch (repositoryEvent.getType()) {
                 case ARTIFACT_DOWNLOADING:
                 case METADATA_DOWNLOADING:
-                    resolverIoStats.startTransfer(key(repositoryEvent, false));
+                    timelineHelper.resolverIoStats.startTransfer(key(repositoryEvent, false));
                     break;
                 case ARTIFACT_DOWNLOADED:
                 case METADATA_DOWNLOADED:
-                    resolverIoStats.finishTransfer(key(repositoryEvent, false),
+                    timelineHelper.resolverIoStats.finishTransfer(key(repositoryEvent, false),
                         fileLength(repositoryEvent.getFile()), false);
                     break;
                 case ARTIFACT_DEPLOYING:
                 case METADATA_DEPLOYING:
-                    resolverIoStats.startTransfer(key(repositoryEvent, true));
+                    timelineHelper.resolverIoStats.startTransfer(key(repositoryEvent, true));
                     break;
                 case ARTIFACT_DEPLOYED:
                 case METADATA_DEPLOYED:
-                    resolverIoStats.finishTransfer(key(repositoryEvent, true),
+                    timelineHelper.resolverIoStats.finishTransfer(key(repositoryEvent, true),
                         fileLength(repositoryEvent.getFile()), true);
                     break;
                 default:

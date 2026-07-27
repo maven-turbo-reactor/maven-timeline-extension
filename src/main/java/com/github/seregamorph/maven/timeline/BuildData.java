@@ -152,7 +152,8 @@ public final class BuildData {
         private final String type;
         private final BigDecimal start;
         private final BigDecimal end;
-        private final BigDecimal dur;
+        private final BigDecimal prepareDur;
+        private final BigDecimal execDur;
 
         @JsonCreator
         public Goal(
@@ -160,13 +161,15 @@ public final class BuildData {
             @JsonProperty("type") String type,
             @JsonProperty("start") BigDecimal start,
             @JsonProperty("end") BigDecimal end,
-            @JsonProperty("dur") BigDecimal dur
+            @JsonProperty("prepareDur") BigDecimal prepareDur,
+            @JsonProperty("execDur") BigDecimal execDur
         ) {
             this.name = name;
             this.type = type;
             this.start = start;
             this.end = end;
-            this.dur = dur;
+            this.prepareDur = prepareDur;
+            this.execDur = execDur;
         }
 
         public String getName() {
@@ -185,8 +188,12 @@ public final class BuildData {
             return end;
         }
 
-        public BigDecimal getDur() {
-            return dur;
+        public BigDecimal getPrepareDur() {
+            return prepareDur;
+        }
+
+        public BigDecimal getExecDur() {
+            return execDur;
         }
     }
 

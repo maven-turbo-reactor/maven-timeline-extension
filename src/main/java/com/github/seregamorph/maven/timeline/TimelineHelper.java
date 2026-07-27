@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.MojoExecutionEvent;
 import org.apache.maven.execution.ProjectExecutionEvent;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
 
 /**
@@ -25,8 +27,9 @@ import org.apache.maven.project.MavenProject;
 @Singleton
 public class TimelineHelper {
 
-    public static final String PREPARE_GOAL = "<prepare>";
-    private final ResolverIoStats resolverIoStats;
+    private static final String PREPARE_GOAL = "<prepare>";
+
+    final ResolverIoStats resolverIoStats;
 
     private boolean initialized;
     private long startNanos;
@@ -59,6 +62,8 @@ public class TimelineHelper {
     private static class StartedGoal {
         private final long startedNanosGoal;
 
+        private long preparedGoalNanos;
+
         private StartedGoal(long startedNanosGoal) {
             this.startedNanosGoal = startedNanosGoal;
         }
@@ -74,12 +79,14 @@ public class TimelineHelper {
          */
         private final String type;
         private final long startedNanos;
+        private final long preparedNanos;
         private final long finishedNanos;
 
-        private CompleteGoal(String name, String type, long startedNanos, long finishedNanos) {
+        private CompleteGoal(String name, String type, long startedNanos, long preparedNanos, long finishedNanos) {
             this.name = name;
             this.type = type;
             this.startedNanos = startedNanos;
+            this.preparedNanos = preparedNanos;
             this.finishedNanos = finishedNanos;
         }
     }
@@ -113,30 +120,46 @@ public class TimelineHelper {
         // before any plugin goal is executed
         ModuleData moduleData = getModuleData(event.getProject());
         moduleData.completeGoals.add(new CompleteGoal(
-            PREPARE_GOAL, PREPARE_GOAL, moduleData.startedNanosProject, System.nanoTime()));
+            PREPARE_GOAL, PREPARE_GOAL,
+            moduleData.startedNanosProject, moduleData.startedNanosProject, System.nanoTime()));
+    }
+
+    void onMojoStarted(ExecutionEvent executionEvent) {
+        // called before beforeMojoExecution(MojoExecutionEvent)
+        ModuleData moduleData = getModuleData(executionEvent.getProject());
+        moduleData.startedGoal = new StartedGoal(System.nanoTime());
     }
 
     void beforeMojoExecution(MojoExecutionEvent event) {
         ModuleData moduleData = getModuleData(event.getProject());
-        moduleData.startedGoal = new StartedGoal(System.nanoTime());
+        if (moduleData.startedGoal != null) {
+            moduleData.startedGoal.preparedGoalNanos = System.nanoTime();
+        }
     }
 
     void onCompleteMojo(MojoExecutionEvent event, boolean success) {
+    }
+
+    void onMojoComplete(ExecutionEvent event, boolean success) {
+        // called after onCompleteMojo(MojoExecutionEvent, boolean)
         // todo distinguish failure
         ModuleData moduleData = getModuleData(event.getProject());
 
-        String pluginArtifactId = event.getExecution().getArtifactId();
+        MojoExecution mojoExecution = event.getMojoExecution();
+        String pluginArtifactId = mojoExecution.getArtifactId();
         String pluginName = getPluginName(pluginArtifactId);
-        String goal = event.getExecution().getGoal();
-        String executionId = event.getExecution().getExecutionId();
+        String goal = mojoExecution.getGoal();
+        String executionId = mojoExecution.getExecutionId();
         String goalName = (pluginName.equals(goal) ? pluginName : pluginName + ":" + goal)
             + (goal.equals(executionId) ? "" : "@" + executionId);
-        String phase = MojoUtils.getMojoPhase(event.getExecution());
+        String phase = MojoUtils.getMojoPhase(mojoExecution);
         String type = goalType(phase);
         // may be null in case of failed execution
         if (moduleData.startedGoal != null) {
-            CompleteGoal completeGoal = new CompleteGoal(
-                goalName, type, moduleData.startedGoal.startedNanosGoal, System.nanoTime());
+            long preparedGoalNanos = moduleData.startedGoal.preparedGoalNanos == 0L ?
+                moduleData.startedGoal.startedNanosGoal : moduleData.startedGoal.preparedGoalNanos;
+            CompleteGoal completeGoal = new CompleteGoal(goalName, type,
+                moduleData.startedGoal.startedNanosGoal, preparedGoalNanos, System.nanoTime());
             moduleData.completeGoals.add(completeGoal);
             moduleData.startedGoal = null;
         } else {
@@ -234,7 +257,8 @@ public class TimelineHelper {
                         completeGoal.type,
                         fromStartSec(completeGoal.startedNanos),
                         fromStartSec(completeGoal.finishedNanos),
-                        TimeFormatUtils.nanosToSeconds(completeGoal.finishedNanos - completeGoal.startedNanos)
+                        TimeFormatUtils.nanosToSeconds(completeGoal.preparedNanos - completeGoal.startedNanos),
+                        TimeFormatUtils.nanosToSeconds(completeGoal.finishedNanos - completeGoal.preparedNanos)
                     ));
                 }
                 String moduleName = duplicateArtifactIds.contains(groupArtifactId.artifactId()) ?
