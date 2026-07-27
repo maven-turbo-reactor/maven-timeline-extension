@@ -142,7 +142,7 @@ let current=d3.zoomIdentity;  // single source of truth for the view transform
 let suppress=false;           // re-entrancy guard between zoom <-> brush
 let navMove=null;             // navigator's brush.move setter (set by buildNavigator)
 
-const zoom=d3.zoom().scaleExtent([1,60]).on("zoom",onZoom);
+const zoom=d3.zoom().scaleExtent([1,120]).on("zoom",onZoom);
 
 // keep every overlay's internal __zoom in lock-step with the shared transform
 function syncTransform(t){ d3.selectAll("svg .zoom-overlay").property("__zoom", t); }
