@@ -140,44 +140,66 @@ const charts=[];
 let INNERW=0;                 // shared inner pixel width (same for every chart)
 let current=d3.zoomIdentity;  // single source of truth for the view transform
 let suppress=false;           // re-entrancy guard between zoom <-> brush
-let navMove=null;             // navigator's brush.move setter (set by buildNavigator)
+let navMove=null;             // navigator's window setter, in build time (set by buildNavigator)
+let navDraw=null;             // navigator's context redraw (set by buildNavigator)
 
-const zoom=d3.zoom().scaleExtent([1,120]).on("zoom",onZoom);
+// k=1 is "whole build visible" (the default view); k<1 zooms out past it, leaving
+// slack — d3's default constrain() would center the build in that slack, we pin it
+// to the left edge instead (tx=0) so t=0 always sits at the y-axis.
+const K_MIN=0.5, K_MAX=240;
+const K_MAX_BRUSH=120;        // navigator handles are coarse, so they zoom less deep
+// tx window that keeps the build inside the viewport: [(1-k)*w, 0] for k>=1,
+// collapsing to {0} once k<1 and the lower bound goes positive (→ pinned left).
+const clampTx=(tx,k,w)=>Math.max(Math.min(0,(1-k)*w), Math.min(0,tx));
+
+// extent and translateExtent are always the same rect here (see applyZoomBehavior),
+// so constraining is just clampTx per axis.
+function constrainLeft(t,extent){
+  const tx=clampTx(t.x,t.k,extent[1][0]-extent[0][0]);
+  const ty=clampTx(t.y,t.k,extent[1][1]-extent[0][1]);
+  return (tx===t.x&&ty===t.y) ? t : d3.zoomIdentity.translate(tx,ty).scale(t.k);
+}
+const zoom=d3.zoom().scaleExtent([K_MIN,K_MAX]).constrain(constrainLeft).on("zoom",onZoom);
 
 // keep every overlay's internal __zoom in lock-step with the shared transform
 function syncTransform(t){ d3.selectAll("svg .zoom-overlay").property("__zoom", t); }
 
+// push `current` out to every chart; the navigator's context tracks the transform too
+// (it shrinks with the focus charts when zoomed out past the whole build), so redraw
+// it before syncing the window — the window is measured in its scale.
+function applyView(syncWindow){
+  syncTransform(current);
+  xz = current.rescaleX(x);
+  charts.forEach(c=>c.draw());
+  if(navDraw) navDraw();
+  if(syncWindow&&navMove){ suppress=true; navMove(xz.domain()); suppress=false; }
+}
+
 function onZoom(ev){
   if(suppress) return;
   current = ev.transform;
-  syncTransform(current);
-  xz = current.rescaleX(x);
-  charts.forEach(c=>c.draw());
-  if(navMove){ suppress=true; navMove([x(xz.domain()[0]), x(xz.domain()[1])]); suppress=false; }
+  applyView(true);
 }
 
-// drive the view from a pixel selection (used by the navigator brush)
-function setView(s){
-  const k = Math.min(60, INNERW/Math.max(1, s[1]-s[0]));
-  current = d3.zoomIdentity.scale(k).translate(-s[0],0);
-  syncTransform(current);
-  xz = current.rescaleX(x);
-  charts.forEach(c=>c.draw());
+// drive the view from a build-time window (used by the navigator brush)
+function setView(t0,t1){
+  const px0=x(t0), px1=x(t1);
+  const k=Math.max(K_MIN, Math.min(K_MAX_BRUSH, INNERW/Math.max(1, px1-px0)));
+  current=d3.zoomIdentity.translate(clampTx(-k*px0,k,INNERW),0).scale(k);
+  applyView(false);
 }
 
 // pan the shared view by dpx screen pixels (trackpad two-finger horizontal swipe);
 // clamped to the same translateExtent the zoom behavior enforces, so we never
-// scroll past either edge of the timeline. at k=1 the whole build is visible → no-op.
+// scroll past either edge of the timeline. at k<=1 the whole build is visible and
+// pinned left → nothing to pan.
 function panBy(dpx){
   const k=current.k;
-  const minTx=(1-k)*INNERW, maxTx=0;       // keep domain within [0, INNERW]
-  const tx=Math.max(minTx, Math.min(maxTx, current.x-dpx));
+  if(k<=1) return;
+  const tx=clampTx(current.x-dpx,k,INNERW);
   if(tx===current.x) return;
   current=d3.zoomIdentity.translate(tx,0).scale(k);
-  syncTransform(current);
-  xz=current.rescaleX(x);
-  charts.forEach(c=>c.draw());
-  if(navMove){ suppress=true; navMove([x(xz.domain()[0]), x(xz.domain()[1])]); suppress=false; }
+  applyView(true);
 }
 
 function applyZoomBehavior(svg,innerW,innerH){
@@ -186,9 +208,8 @@ function applyZoomBehavior(svg,innerW,innerH){
 }
 
 function resetZoom(){
-  current=d3.zoomIdentity; syncTransform(current); xz=x;
-  charts.forEach(c=>c.draw());
-  if(navMove){ suppress=true; navMove(x.range()); suppress=false; }
+  current=d3.zoomIdentity;
+  applyView(true);
 }
 
 /* shared crosshair */
@@ -378,20 +399,42 @@ function buildNavigator(){
   // faint context: active-task count across the whole build, so the scrollbar has visual reference
   const yMax=d3.max(metrics,m=>m.active)||1;
   const y=d3.scaleLinear().domain([0,yMax]).range([innerH,0]);
-  const area=d3.area().x(m=>x(m.t)).y0(innerH).y1(m=>y(m.active));
-  g.append("path").attr("class","nav-area").attr("d",area(metrics)).attr("fill-opacity",0.7);
-  g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`)
-    .call(d3.axisBottom(x).ticks(10).tickFormat(fmtAxis));
+  // the context spans the whole build, but its footprint follows the focus charts:
+  // zoomed out past k=1 the build occupies only the left k·innerW pixels there, so
+  // shrink the context to match and stay column-aligned with the Execution panel.
+  const xn=d3.scaleLinear().domain([T0,T1]).range([0,innerW]);
+  const area=d3.area().x(m=>xn(m.t)).y0(innerH).y1(m=>y(m.active));
+  const areaPath=g.append("path").attr("class","nav-area").attr("fill-opacity",0.7);
+  const axisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
 
-  const brush=d3.brushX().extent([[0,0],[innerW,innerH]]).on("brush end",ev=>{
+  // a brush gesture changes k, which would rescale the context mid-drag and make the
+  // handle chase its own tail; freeze the context (and the scale we read the selection
+  // through) for the duration of the gesture, then resync on release.
+  let frozen=null;
+  function draw(){
+    if(frozen) return;
+    xn.range([0, innerW*Math.min(1,current.k)]);
+    areaPath.attr("d",area(metrics));
+    axisG.call(d3.axisBottom(xn).ticks(10).tickFormat(fmtAxis));
+  }
+
+  const brush=d3.brushX().extent([[0,0],[innerW,innerH]]).on("start brush end",ev=>{
     if(suppress) return;
-    if(ev.selection){ setView(ev.selection); return; }
-    if(ev.type==="end"){ setView(x.range()); suppress=true; navMove(x.range()); suppress=false; }
+    if(ev.type==="start"){ frozen=xn.copy(); return; }
+    const sx=frozen||xn;
+    if(ev.selection) setView(sx.invert(ev.selection[0]), sx.invert(ev.selection[1]));
+    else if(ev.type==="end") setView(T0,T1);
+    if(ev.type==="end"){ frozen=null; draw(); suppress=true; navMove(xz.domain()); suppress=false; }
   });
   const brushG=g.append("g").attr("class","brush").call(brush);
-  // expose a setter the zoom handler can call to keep the window in sync
-  navMove = sel => brushG.call(brush.move, sel);
-  navMove(x.range());   // start fully zoomed-out
+  // expose a setter the zoom handler can call to keep the window in sync. clamped:
+  // zoomed out past k=1 the view is wider than the build, so the raw window would
+  // reach past the context — there the window just covers everything.
+  navMove = dom => brushG.call(brush.move,
+    [Math.max(0,xn(dom[0])), Math.min(innerW,xn(dom[1]))]);
+  navDraw = draw;
+  draw();
+  navMove(x.domain());   // start fully zoomed-out
 }
 
 /* ====================== legend ====================== */
@@ -407,7 +450,7 @@ TYPE_KEYS.forEach(k=>{
 
 /* ====================== build & wire ====================== */
 function buildAll(){
-  charts.length=0; current=d3.zoomIdentity; xz=x; navMove=null;
+  charts.length=0; current=d3.zoomIdentity; xz=x; navMove=null; navDraw=null;
   charts.push(buildGantt());
   charts.push(buildMetric("heap",{height:74,unit:" MB",gcMarkers:true,fmtY:Math.round,series:[
     {key:"heapCommitted",label:"committed",color:"#c0c7d1",fill:"#c0c7d1",fillOpacity:0.5},
