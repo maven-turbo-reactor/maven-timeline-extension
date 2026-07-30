@@ -127,6 +127,9 @@ const fmtAxisZoomed=()=>{
   const dec=Math.min(4,Math.max(1,Math.ceil(-Math.log10(span/10))+1));
   return s=>fmtAxis(s,dec);
 };
+// goal durations (seconds) span orders of magnitude — a sub-millisecond goal would read
+// as "0.00s". switch unit at 0.01s / 0.01ms so two decimals always stay meaningful.
+const fmtDur=v=>v>=0.01?`${v.toFixed(2)}s`:v>=1e-5?`${(v*1e3).toFixed(2)}ms`:`${(v*1e6).toFixed(2)}µs`;
 
 const M={left:66,right:18,top:8,bottom:18};
 const width = () => document.getElementById("gantt").clientWidth || 1400;
@@ -330,9 +333,9 @@ function buildGantt(){
         `<br><span class="row">worker-${hit.thread+1}</span>`+
         `<br><span class="row">start: <b>${fmtTime(hit.start)}</b></span>`+
         (isPrepare(hit)
-          ? `<br><span class="row">prepare time: <b>${hit.execDur.toFixed(2)}s</b></span>`
-          : `<br><span class="row">prepare time: <b>${hit.prepareDur.toFixed(2)}s</b></span>`+
-            `<br><span class="row">exec time: <b>${hit.execDur.toFixed(2)}s</b></span>`)+
+          ? `<br><span class="row">prepare time: <b>${fmtDur(hit.execDur)}</b></span>`
+          : `<br><span class="row">prepare time: <b>${fmtDur(hit.prepareDur)}</b></span>`+
+            `<br><span class="row">exec time: <b>${fmtDur(hit.execDur)}</b></span>`)+
         // absent for CLI-invoked goals (not bound to a lifecycle phase) and for <prepare>
         (hit.phase?`<br><span class="row">phase: <b>${esc(hit.phase)}</b></span>`:"")+
         (isPrepare(hit)?`<br><span class="row" style="color:#ffd479">synthetic · project init → first goal</span>`:""),ev);
