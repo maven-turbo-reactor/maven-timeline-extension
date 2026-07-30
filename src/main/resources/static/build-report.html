@@ -119,7 +119,14 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 /* ====================== layout / shared scale ====================== */
 const fmtTime=s=>{const m=Math.floor(s/60),sec=s-m*60;return m>0?`${m}m ${sec.toFixed(1)}s`:`${sec.toFixed(1)}s`;};
 // axis labels: drop the trailing ".0" (e.g. "10s" not "10.0s"), keep fractions when present
-const fmtAxis=s=>{const m=Math.floor(s/60),sec=s-m*60;const ss=Number.isInteger(sec)?sec:+sec.toFixed(1);return m>0?`${m}m ${ss}s`:`${ss}s`;};
+const fmtAxis=(s,dec=1)=>{const m=Math.floor(s/60),sec=s-m*60;const ss=+sec.toFixed(dec);return m>0?`${m}m ${ss}s`:`${ss}s`;};
+// tick precision follows the visible span: at deep zoom the window is a fraction of a
+// second, where a fixed 0.1s rounding would print the same label on every tick.
+const fmtAxisZoomed=()=>{
+  const d=xz.domain(), span=Math.max(1e-9,d[1]-d[0]);
+  const dec=Math.min(4,Math.max(1,Math.ceil(-Math.log10(span/10))+1));
+  return s=>fmtAxis(s,dec);
+};
 
 const M={left:66,right:18,top:8,bottom:18};
 const width = () => document.getElementById("gantt").clientWidth || 1400;
@@ -146,8 +153,8 @@ let navDraw=null;             // navigator's context redraw (set by buildNavigat
 // k=1 is "whole build visible" (the default view); k<1 zooms out past it, leaving
 // slack — d3's default constrain() would center the build in that slack, we pin it
 // to the left edge instead (tx=0) so t=0 always sits at the y-axis.
-const K_MIN=0.5, K_MAX=480;
-const K_MAX_BRUSH=240;        // navigator handles are coarse, so they zoom less deep
+const K_MIN=0.5, K_MAX=1920;
+const K_MAX_BRUSH=960;        // navigator handles are coarse, so they zoom less deep
 // tx window that keeps the build inside the viewport: [(1-k)*w, 0] for k>=1,
 // collapsing to {0} once k<1 and the lower bound goes positive (→ pinned left).
 const clampTx=(tx,k,w)=>Math.max(Math.min(0,(1-k)*w), Math.min(0,tx));
@@ -275,7 +282,7 @@ function buildGantt(){
   }
 
   function draw(){
-    const xAxis=d3.axisBottom(xz).ticks(10).tickFormat(fmtAxis);
+    const xAxis=d3.axisBottom(xz).ticks(10).tickFormat(fmtAxisZoomed());
     xAxisG.call(xAxis);
     grid.call(d3.axisBottom(xz).ticks(10).tickSize(innerH).tickFormat(""))
       .attr("transform",`translate(0,0)`).selectAll("text").remove();
@@ -363,7 +370,7 @@ function buildMetric(id,opts){
 
   const bisect=d3.bisector(m=>m.t).center;
   function draw(){
-    xAxisG.call(d3.axisBottom(xz).ticks(10).tickFormat(fmtAxis));
+    xAxisG.call(d3.axisBottom(xz).ticks(10).tickFormat(fmtAxisZoomed()));
     opts.series.forEach((s,i)=>{
       const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(m[s.key]));
       paths[i].attr("d",area(metrics));
@@ -417,7 +424,8 @@ function buildNavigator(){
     if(frozen) return;
     xn.range([0, innerW*Math.min(1,current.k)]);
     areaPath.attr("d",area(metrics));
-    axisG.call(d3.axisBottom(xn).ticks(10).tickFormat(fmtAxis));
+    // wrapped: d3 passes (value, index) and the index would land in fmtAxis' `dec`
+    axisG.call(d3.axisBottom(xn).ticks(10).tickFormat(s=>fmtAxis(s)));
   }
 
   const brush=d3.brushX().extent([[0,0],[innerW,innerH]]).on("start brush end",ev=>{
