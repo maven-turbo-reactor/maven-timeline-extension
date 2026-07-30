@@ -10,6 +10,7 @@ import org.apache.maven.plugin.descriptor.MojoDescriptor;
 final class MojoUtils {
 
     static String getMojoPhase(MojoExecution mojoExecution) {
+        // Note: for the CLI executions phase is null
         String phase = mojoExecution.getLifecyclePhase();
         if (phase == null) {
             MojoDescriptor mojoDescriptor = mojoExecution.getMojoDescriptor();

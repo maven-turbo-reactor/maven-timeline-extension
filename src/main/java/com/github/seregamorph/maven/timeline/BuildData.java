@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Read-only entity model for {@code build-data.json}, consumed by the D3 timeline
@@ -150,6 +151,9 @@ public final class BuildData {
         private final String name;
         // coarse classification used to color the timeline atom (see TimelineHelper.goalType)
         private final String type;
+        // lifecycle phase of the executed goal
+        @Nullable
+        private final String phase;
         private final BigDecimal start;
         private final BigDecimal end;
         private final BigDecimal prepareDur;
@@ -159,6 +163,7 @@ public final class BuildData {
         public Goal(
             @JsonProperty("name") String name,
             @JsonProperty("type") String type,
+            @JsonProperty("phase") @Nullable String phase,
             @JsonProperty("start") BigDecimal start,
             @JsonProperty("end") BigDecimal end,
             @JsonProperty("prepareDur") BigDecimal prepareDur,
@@ -166,6 +171,7 @@ public final class BuildData {
         ) {
             this.name = name;
             this.type = type;
+            this.phase = phase;
             this.start = start;
             this.end = end;
             this.prepareDur = prepareDur;
@@ -178,6 +184,11 @@ public final class BuildData {
 
         public String getType() {
             return type;
+        }
+
+        @Nullable
+        public String getPhase() {
+            return phase;
         }
 
         public BigDecimal getStart() {

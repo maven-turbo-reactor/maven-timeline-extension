@@ -326,6 +326,8 @@ function buildGantt(){
           ? `<br><span class="row">prepare time: <b>${hit.execDur.toFixed(2)}s</b></span>`
           : `<br><span class="row">prepare time: <b>${hit.prepareDur.toFixed(2)}s</b></span>`+
             `<br><span class="row">exec time: <b>${hit.execDur.toFixed(2)}s</b></span>`)+
+        // absent for CLI-invoked goals (not bound to a lifecycle phase) and for <prepare>
+        (hit.phase?`<br><span class="row">phase: <b>${esc(hit.phase)}</b></span>`:"")+
         (isPrepare(hit)?`<br><span class="row" style="color:#ffd479">synthetic · project init → first goal</span>`:""),ev);
       else hideTip();
     })
@@ -489,7 +491,8 @@ function ingest(data){
   goals = [];
   tasks.forEach(t=>(t.goals||[]).forEach((g,i)=>{
     goals.push({uid:t.module+"#"+i, module:t.module, thread:t.thread,
-      goal:g.name, type:g.type, start:g.start, end:g.end, prepareDur:g.prepareDur, execDur:g.execDur});
+      goal:g.name, type:g.type, phase:g.phase, start:g.start, end:g.end,
+      prepareDur:g.prepareDur, execDur:g.execDur});
   }));
   const meta = data.meta || {};
   N_THREADS  = meta.threads ?? d3.max(tasks,t=>t.thread)+1 ?? 1;

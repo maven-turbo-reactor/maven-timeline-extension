@@ -78,13 +78,17 @@ public class TimelineHelper {
          * Coarse goal classification used to color the timeline, see {@link #goalType}.
          */
         private final String type;
+        @Nullable
+        private final String phase;
         private final long startedNanos;
         private final long preparedNanos;
         private final long finishedNanos;
 
-        private CompleteGoal(String name, String type, long startedNanos, long preparedNanos, long finishedNanos) {
+        private CompleteGoal(String name, String type, @Nullable String phase,
+                             long startedNanos, long preparedNanos, long finishedNanos) {
             this.name = name;
             this.type = type;
+            this.phase = phase;
             this.startedNanos = startedNanos;
             this.preparedNanos = preparedNanos;
             this.finishedNanos = finishedNanos;
@@ -125,7 +129,7 @@ public class TimelineHelper {
         ModuleData moduleData = getModuleData(executionEvent.getProject());
         if (moduleData.completeGoals.isEmpty()) {
             moduleData.completeGoals.add(new CompleteGoal(
-                PREPARE_GOAL, PREPARE_GOAL,
+                PREPARE_GOAL, PREPARE_GOAL, null,
                 moduleData.startedNanosProject, moduleData.startedNanosProject, System.nanoTime()));
         }
         moduleData.startedGoal = new StartedGoal(System.nanoTime());
@@ -159,7 +163,8 @@ public class TimelineHelper {
         if (moduleData.startedGoal != null) {
             long preparedGoalNanos = moduleData.startedGoal.preparedGoalNanos == 0L ?
                 moduleData.startedGoal.startedNanosGoal : moduleData.startedGoal.preparedGoalNanos;
-            CompleteGoal completeGoal = new CompleteGoal(goalName, type,
+            // hint: mojoExecution.getLifecyclePhase() can be null for CLI executions
+            CompleteGoal completeGoal = new CompleteGoal(goalName, type, mojoExecution.getLifecyclePhase(),
                 moduleData.startedGoal.startedNanosGoal, preparedGoalNanos, System.nanoTime());
             moduleData.completeGoals.add(completeGoal);
             moduleData.startedGoal = null;
@@ -256,6 +261,7 @@ public class TimelineHelper {
                     goals.add(new BuildData.Goal(
                         completeGoal.name,
                         completeGoal.type,
+                        completeGoal.phase,
                         fromStartSec(completeGoal.startedNanos),
                         fromStartSec(completeGoal.finishedNanos),
                         TimeFormatUtils.nanosToSeconds(completeGoal.preparedNanos - completeGoal.startedNanos),
