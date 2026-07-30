@@ -156,8 +156,8 @@ let navDraw=null;             // navigator's context redraw (set by buildNavigat
 // k=1 is "whole build visible" (the default view); k<1 zooms out past it, leaving
 // slack — d3's default constrain() would center the build in that slack, we pin it
 // to the left edge instead (tx=0) so t=0 always sits at the y-axis.
-const K_MIN=0.5, K_MAX=1920;
-const K_MAX_BRUSH=960;        // navigator handles are coarse, so they zoom less deep
+const K_MIN=0.5, K_MAX=20000;
+const K_MAX_BRUSH=10000;        // navigator handles are coarse, so they zoom less deep
 // tx window that keeps the build inside the viewport: [(1-k)*w, 0] for k>=1,
 // collapsing to {0} once k<1 and the lower bound goes positive (→ pinned left).
 const clampTx=(tx,k,w)=>Math.max(Math.min(0,(1-k)*w), Math.min(0,tx));
