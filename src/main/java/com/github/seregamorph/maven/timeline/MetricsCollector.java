@@ -86,8 +86,11 @@ public class MetricsCollector {
 
     private BuildData.Metric scrapeMetrics() {
         long nowNanos = System.nanoTime();
-        int threads = threadMXBean.getThreadCount();
+        // getThreadCount() already includes the daemon ones, so daemonThreads <= totalThreads
+        // (the two readings are not atomic, but they are only rendered, never subtracted)
         int daemonThreads = threadMXBean.getDaemonThreadCount();
+        // there is a race condition of scraping getDaemonThreadCount / threadCount
+        int totalThreads = Math.max(threadMXBean.getThreadCount(), daemonThreads);
         long heapUsedBytes = memoryMXBean.getHeapMemoryUsage().getUsed();
         long heapCommittedBytes = memoryMXBean.getHeapMemoryUsage().getCommitted();
         double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
@@ -116,7 +119,8 @@ public class MetricsCollector {
             gc,
             cpuPercent(processCpuLoad),
             cpuPercent(systemCpuLoad),
-            threads + daemonThreads,
+            totalThreads,
+            daemonThreads,
             BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP),
             BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP)
         );

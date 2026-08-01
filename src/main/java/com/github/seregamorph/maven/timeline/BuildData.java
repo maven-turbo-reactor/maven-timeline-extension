@@ -220,7 +220,9 @@ public final class BuildData {
         private boolean gc;
         private final BigDecimal processCpu;
         private final BigDecimal systemCpu;
-        private final int threads;
+        // all live threads (daemon and non-daemon), so daemonThreads <= totalThreads
+        private final int totalThreads;
+        private final int daemonThreads;
         // computed as a post-processing step from recorded transfer intervals, hence mutable
         private BigDecimal resolverDownload;
         private BigDecimal resolverUpload;
@@ -234,7 +236,8 @@ public final class BuildData {
             @JsonProperty("gc") boolean gc,
             @JsonProperty("processCpu") BigDecimal processCpu,
             @JsonProperty("systemCpu") BigDecimal systemCpu,
-            @JsonProperty("threads") int threads,
+            @JsonProperty("totalThreads") int totalThreads,
+            @JsonProperty("daemonThreads") int daemonThreads,
             @JsonProperty("resolverDownload") BigDecimal resolverDownload,
             @JsonProperty("resolverUpload") BigDecimal resolverUpload
         ) {
@@ -245,7 +248,8 @@ public final class BuildData {
             this.gc = gc;
             this.processCpu = processCpu;
             this.systemCpu = systemCpu;
-            this.threads = threads;
+            this.totalThreads = totalThreads;
+            this.daemonThreads = daemonThreads;
             this.resolverDownload = resolverDownload;
             this.resolverUpload = resolverUpload;
         }
@@ -282,8 +286,12 @@ public final class BuildData {
             return systemCpu;
         }
 
-        public int getThreads() {
-            return threads;
+        public int getTotalThreads() {
+            return totalThreads;
+        }
+
+        public int getDaemonThreads() {
+            return daemonThreads;
         }
 
         public BigDecimal getResolverDownload() {

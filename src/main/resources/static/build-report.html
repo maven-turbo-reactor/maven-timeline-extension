@@ -76,7 +76,7 @@
   </div>
   <div class="panel"><div class="panel-title">Navigator — drag to scroll, resize handles to zoom</div><div id="nav"></div></div>
   <div class="panel"><div class="panel-title">CPU utilization (%)</div><div id="cpu"></div></div>
-  <div class="panel"><div class="panel-title">Live threads</div><div id="threads"></div></div>
+  <div class="panel"><div class="panel-title">Live threads (total / daemon)</div><div id="threads"></div></div>
   <div class="panel"><div class="panel-title">Heap memory (used / committed / GC triggered)</div><div id="heap"></div></div>
   <div class="panel"><div class="panel-title">Resolver I/O (MB/s)</div><div id="resolverIo"></div></div>
   <div class="report-foot">
@@ -468,8 +468,11 @@ function buildAll(){
   charts.push(buildMetric("heap",{height:74,unit:" MB",gcMarkers:true,fmtY:Math.round,series:[
     {key:"heapCommitted",label:"committed",color:"#c0c7d1",fill:"#c0c7d1",fillOpacity:0.5},
     {key:"heapUsed",label:"used",color:"#b54a3a",fill:"#c46352",fillOpacity:0.55}]}));
+  // daemon threads are a subset of the total, so the total is drawn first as the
+  // wider backdrop and the daemon area nests inside it (same idiom as heap used/committed)
   charts.push(buildMetric("threads",{height:64,series:[
-    {key:"threads",label:"live threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.4}]}));
+    {key:"totalThreads",label:"Total threads",color:"#7c9fe8",fill:"#a8c1f2",fillOpacity:0.45},
+    {key:"daemonThreads",label:"Daemon threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.5}]}));
   charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2).replace(/\.00$/,""),series:[
     {key:"resolverDownload",label:"download",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4},
     {key:"resolverUpload",label:"upload",color:"#b07cc6",fill:"#c79ad8",fillOpacity:0.4}]}));
