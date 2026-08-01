@@ -99,6 +99,9 @@ public class MetricsCollector {
         double systemCpuLoad = operatingSystemMXBean.getSystemCpuLoad();
         systemCpuLoad = lastSystemCpuLoad = Double.isNaN(systemCpuLoad) || systemCpuLoad <= 0.0d
             ? lastSystemCpuLoad : systemCpuLoad;
+        // there is a race condition between processCpuLoad and systemCpuLoad scrape, but normally
+        // the systemCpuLoad should be never less than processCpuLoad
+        systemCpuLoad = Math.max(systemCpuLoad, processCpuLoad);
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
