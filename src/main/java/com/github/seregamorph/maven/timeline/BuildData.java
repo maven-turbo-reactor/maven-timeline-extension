@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 /**
  * Read-only entity model for {@code build-data.json}, consumed by the D3 timeline
- * report. Bound by Jackson 3 via annotated constructors; JDK 8 compatible.
+ * report.
  *
  * @author Sergey Chernov
  */
