@@ -1,6 +1,7 @@
 package com.github.seregamorph.maven.timeline;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -158,6 +159,8 @@ public final class BuildData {
         private final BigDecimal end;
         private final BigDecimal prepareDur;
         private final BigDecimal execDur;
+        // true if the mojo threw, rendered as a failure highlight by the report
+        private final boolean failed;
 
         @JsonCreator
         public Goal(
@@ -167,7 +170,8 @@ public final class BuildData {
             @JsonProperty("start") BigDecimal start,
             @JsonProperty("end") BigDecimal end,
             @JsonProperty("prepareDur") BigDecimal prepareDur,
-            @JsonProperty("execDur") BigDecimal execDur
+            @JsonProperty("execDur") BigDecimal execDur,
+            @JsonProperty("failed") boolean failed
         ) {
             this.name = name;
             this.type = type;
@@ -176,6 +180,7 @@ public final class BuildData {
             this.end = end;
             this.prepareDur = prepareDur;
             this.execDur = execDur;
+            this.failed = failed;
         }
 
         public String getName() {
@@ -205,6 +210,14 @@ public final class BuildData {
 
         public BigDecimal getExecDur() {
             return execDur;
+        }
+
+        /**
+         * Serialized only for the (rare) failed goals to keep {@code build-data.json} compact.
+         */
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        public boolean isFailed() {
+            return failed;
         }
     }
 

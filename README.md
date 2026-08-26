@@ -5,7 +5,8 @@
 This extension generates Maven build task timeline report which shows how the worker threads are actually loaded while
 building the project. Also, it shows aligned CPU, heap, threads and resolver IO charts. The timeline can be zoomed to see smaller
 details. Before the maven goal execution the timeline has the "preparation" phase of any module which is mostly
-resolving the dependencies.
+resolving the dependencies. A goal that failed the build is highlighted in red on the timeline (and pinned on the
+navigator), so a failed build report shows at a glance where and when it broke.
 
 The sample interactive report [preview](https://maven-turbo-reactor.github.io/maven-timeline-extension/build-report.html):
 <img src="docs/timeline.png" alt="Timeline" width="700"/>

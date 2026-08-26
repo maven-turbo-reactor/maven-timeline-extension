@@ -9,6 +9,8 @@
   :root {
     --ink: #1f2933; --muted: #7b8794; --grid: #eceff1; --border: #e0e4e8;
     --accent: #2f6fed; --crosshair: #d23f3f;
+    /* failed goal: bright red fill, dark red stroke/ink — kept in sync with FAIL_* in the script */
+    --fail: #e5484d; --fail-ink: #8b1a1a;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: #f5f6f8; color: var(--ink);
@@ -17,6 +19,7 @@
   header.report-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 2px; }
   header.report-head h1 { font-size: 18px; font-weight: 600; margin: 0; }
   header.report-head .sub { color: var(--muted); font-size: 12px; }
+  .fail-note { color: var(--fail-ink); font-weight: 600; }
   .toolbar { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; flex-wrap: wrap; }
   .toolbar button { border: 1px solid var(--border); background: #fff; color: var(--ink);
     padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
@@ -72,6 +75,8 @@
   td.goal .bar { position: relative; display: inline-block; max-width: 100%; padding: 0 4px;
     border-radius: 2px; background: rgba(47,111,237,.13); }
   td.goal .bar.prep { background: rgba(155,165,177,.22); }
+  td.goal .bar.failed { background: rgba(229,72,77,.18); }
+  td.goal .fail-badge { color: var(--fail-ink); font-size: 11px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
   .report-foot { text-align: center; color: var(--muted); font-size: 11px; padding: 8px 0 4px; }
   .report-foot a { color: var(--muted); text-decoration: none; }
   .report-foot a:hover { color: var(--accent); text-decoration: underline; }
@@ -135,6 +140,9 @@ const OTHER_COLOR="#9aa5b1";
 // synthetic goal injected by the extension: the gap between project init and its first real goal
 const PREPARE_GOAL="<prepare>";
 const isPrepare=d=>d.goal===PREPARE_GOAL;
+// a failed goal (the mojo threw) overrides its type color: bright red fill hatched with a darker
+// red, so it stands out by texture too — the "test" hue is reddish and colors alone would not do
+const FAIL_COLOR="#e5484d", FAIL_STROKE="#8b1a1a";
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h;}
 function goalColor(d){const hue=TYPE_HUE[d.type];
   if(hue==null) return OTHER_COLOR;
@@ -283,6 +291,13 @@ function buildGantt(){
   hatch.append("rect").attr("width",6).attr("height",6).attr("fill","#9aa5b1");
   hatch.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",6)
     .attr("stroke","#cbd2d9").attr("stroke-width",2.4);
+  // failed goal: same hatch geometry mirrored, in red — texture + color, and it survives
+  // the 1px-wide rect of a goal that failed immediately
+  const failHatch=defs.append("pattern").attr("id","failHatch").attr("patternUnits","userSpaceOnUse")
+    .attr("width",6).attr("height",6).attr("patternTransform","rotate(-45)");
+  failHatch.append("rect").attr("width",6).attr("height",6).attr("fill",FAIL_COLOR);
+  failHatch.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",6)
+    .attr("stroke",FAIL_STROKE).attr("stroke-width",2.4);
 
   // static lane backgrounds + labels
   d3.range(N_THREADS).forEach(i=>{
@@ -327,18 +342,22 @@ function buildGantt(){
     merged.select("rect")
       .attr("x",d=>Math.max(0,xz(d.start)))
       .attr("y",d=>d.thread*(LANE_H+GAP)+2)
-      .attr("width",d=>Math.max(1,Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start))))
+      // a goal that failed on its first millisecond is still worth a few pixels
+      .attr("width",d=>Math.max(d.failed?4:1,Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start))))
       .attr("height",LANE_H-4)
-      .attr("fill",d=>isPrepare(d)?"url(#prepHatch)":goalColor(d))
-      .attr("stroke",d=>isPrepare(d)?"#7b8794":null)
-      .attr("stroke-dasharray",d=>isPrepare(d)?"2 2":null)
-      .attr("stroke-width",d=>isPrepare(d)?1:null);
+      .attr("fill",d=>d.failed?"url(#failHatch)":isPrepare(d)?"url(#prepHatch)":goalColor(d))
+      .attr("stroke",d=>d.failed?FAIL_STROKE:isPrepare(d)?"#7b8794":null)
+      .attr("stroke-dasharray",d=>!d.failed&&isPrepare(d)?"2 2":null)
+      .attr("stroke-width",d=>d.failed?1.5:isPrepare(d)?1:null);
     merged.select("text")
       .attr("x",d=>Math.max(0,xz(d.start))+5)
       .attr("y",d=>d.thread*(LANE_H+GAP)+LANE_H/2+3.5)
       // white label reads cleanly on the inverted (darker) hatch
       .text(d=>{const w=Math.min(innerW,xz(d.end))-Math.max(0,xz(d.start));
-        if(w<=46)return "";return w>120?`${d.module} · ${d.goal}`:d.module;});
+        // the ✕ marker gets a lower width threshold: a failure must stay recognizable when zoomed out
+        if(w<=46)return d.failed&&w>11?"✕":"";
+        const mark=d.failed?"✕ ":"";
+        return w>120?`${mark}${d.module} · ${d.goal}`:mark+d.module;});
     drawFrame();
   }
 
@@ -348,7 +367,12 @@ function buildGantt(){
       moveCrosshair(xz.invert(px));
       // hit-test the goal rectangle under the cursor (the overlay sits above the bars)
       const lane=Math.floor(py/(LANE_H+GAP)), tm=xz.invert(px);
-      const hit=(lane>=0&&lane<N_THREADS)?goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm):null;
+      const hit=(lane>=0&&lane<N_THREADS)
+        ?(goals.find(d=>d.thread===lane&&d.start<=tm&&d.end>tm)
+          // zero-length atoms (a goal that failed with no measured span) span no time interval to
+          // hit-test against, so fall back to pixel proximity of their marker
+          ??goals.find(d=>d.thread===lane&&d.start===d.end&&Math.abs(xz(d.start)-px)<=5))
+        :null;
       const key=hit?{module:hit.module,thread:hit.thread}:null;
       if((key&&key.module)!==(frameKey&&frameKey.module)||(key&&key.thread)!==(frameKey&&frameKey.thread)){
         frameKey=key; drawFrame();
@@ -356,6 +380,7 @@ function buildGantt(){
       if(hit) showTip(
         `<b>${esc(hit.module)}</b>`+
         `<br><b>${esc(hit.goal)}</b>`+
+        (hit.failed?`<br><b style="color:#ff6b6b">✕ FAILED</b>`:"")+
         `<br><span class="row">worker-${hit.thread+1}</span>`+
         `<br><span class="row">start: <b>${fmtTime(hit.start)}</b></span>`+
         (isPrepare(hit)
@@ -443,6 +468,8 @@ function buildNavigator(){
   const xn=d3.scaleLinear().domain([T0,T1]).range([0,innerW]);
   const area=d3.area().x(m=>xn(m.t)).y0(innerH).y1(m=>y(m.active));
   const areaPath=g.append("path").attr("class","nav-area").attr("fill-opacity",0.7);
+  // failures are pinned on the navigator so they can be found without hunting through the zoom
+  const failG=g.append("g");
   const axisG=g.append("g").attr("class","axis").attr("transform",`translate(0,${innerH})`);
 
   // a brush gesture changes k, which would rescale the context mid-drag and make the
@@ -453,6 +480,12 @@ function buildNavigator(){
     if(frozen) return;
     xn.range([0, innerW*Math.min(1,current.k)]);
     areaPath.attr("d",area(metrics));
+    const marks=failG.selectAll("line").data(goals.filter(d=>d.failed));
+    marks.exit().remove();
+    marks.enter().append("line")
+      .attr("stroke",FAIL_COLOR).attr("stroke-width",2).attr("pointer-events","none")
+      .merge(marks)
+      .attr("x1",d=>xn(d.start)).attr("x2",d=>xn(d.start)).attr("y1",0).attr("y2",innerH);
     // wrapped: d3 passes (value, index) and the index would land in fmtAxis' `dec`
     axisG.call(d3.axisBottom(xn).ticks(10).tickFormat(s=>fmtAxis(s)));
   }
@@ -486,6 +519,10 @@ TYPE_KEYS.forEach(k=>{
   const c=TYPE_HUE[k]!=null?`hsl(${TYPE_HUE[k]} 52% 52%)`:OTHER_COLOR;
   legend.append("span").html(`<i style="background:${c}"></i>${k}`);
 });
+// failed goals override the type color — mirror the gantt's red hatch in the swatch
+const failLegend=legend.append("span").style("display","none").html(
+  `<i style="background:repeating-linear-gradient(-45deg,${FAIL_COLOR} 0 2px,${FAIL_STROKE} 2px 4px);`+
+  `border:1px solid ${FAIL_STROKE}"></i><span class="fail-note">failed</span>`);
 
 /* ====================== slowest goals summary ======================
    Aggregates every goal atom by its name (the synthetic <prepare> included — its
@@ -502,6 +539,7 @@ const fmtSum=v=>v===0?"0":v>=60?fmtTime(v):fmtDur(v);
 function computeGoalSummary(){
   const byName=d3.rollup(goals,
     v=>({count:v.length,
+         failures:v.filter(d=>d.failed).length,
          prepare:d3.sum(v,d=>d.prepareDur||0),
          exec:d3.sum(v,d=>d.execDur||0)}),
     d=>d.goal);
@@ -517,8 +555,9 @@ function renderGoalSummary(){
   const body=rows.map(d=>{
     // bar width is share of the slowest goal, so the top row always spans the column
     const w=Math.max(2,100*d.exec/maxExec);
-    return `<tr><td class="goal"><span class="bar${isPrepare(d)?" prep":""}" `+
-      `style="width:${w.toFixed(2)}%">${esc(d.goal)}</span></td>`+
+    return `<tr><td class="goal"><span class="bar${isPrepare(d)?" prep":d.failures?" failed":""}" `+
+      `style="width:${w.toFixed(2)}%">${esc(d.goal)}</span>`+
+      (d.failures?`<span class="fail-badge">✕ ${d.failures} failed</span>`:"")+`</td>`+
       `<td>${d.count}</td>`+
       `<td>${fmtSum(d.prepare)}</td>`+
       `<td>${fmtSum(d.exec)}</td>`+
@@ -586,7 +625,7 @@ function ingest(data){
   tasks.forEach(t=>(t.goals||[]).forEach((g,i)=>{
     goals.push({uid:t.module+"#"+i, module:t.module, thread:t.thread,
       goal:g.name, type:g.type, phase:g.phase, start:g.start, end:g.end,
-      prepareDur:g.prepareDur, execDur:g.execDur});
+      prepareDur:g.prepareDur, execDur:g.execDur, failed:!!g.failed});
   }));
   const meta = data.meta || {};
   N_THREADS  = meta.threads ?? d3.max(tasks,t=>t.thread)+1 ?? 1;
@@ -595,7 +634,14 @@ function ingest(data){
   totalGoals = meta.totalGoals ?? goals.length;
   x.domain([T0,T1]);
   d3.select("#headline").text(`${totalGoals} goals executed in ${tasks.length} modules in ${fmtTime(T1)} (${fmtTime(meta.serialDuration)} serial)`);
-  d3.select("#subline").text(`${N_THREADS} worker threads`);
+  // a failed goal is the headline of the build it belongs to: name it right in the header,
+  // the timeline itself only shows where it happened
+  const failed=goals.filter(d=>d.failed);
+  failLegend.style("display",failed.length?null:"none");
+  d3.select("#subline").html(`${N_THREADS} worker threads`+(failed.length
+    ? ` · <span class="fail-note">✕ failed: ${esc(failed[0].module)} · ${esc(failed[0].goal)}`+
+      `${failed.length>1?` (+${failed.length-1} more)`:""}</span>`
+    : ""));
   computeGoalSummary();
   renderGoalSummary();   // width-independent, so it stays out of buildAll()/resize
   buildAll();

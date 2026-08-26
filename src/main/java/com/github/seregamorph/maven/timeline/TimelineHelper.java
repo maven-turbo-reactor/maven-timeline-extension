@@ -83,15 +83,20 @@ public class TimelineHelper {
         private final long startedNanos;
         private final long preparedNanos;
         private final long finishedNanos;
+        /**
+         * False if the mojo threw (the goal failed), reported to the timeline as a failure highlight.
+         */
+        private final boolean success;
 
         private CompleteGoal(String name, String type, @Nullable String phase,
-                             long startedNanos, long preparedNanos, long finishedNanos) {
+                             long startedNanos, long preparedNanos, long finishedNanos, boolean success) {
             this.name = name;
             this.type = type;
             this.phase = phase;
             this.startedNanos = startedNanos;
             this.preparedNanos = preparedNanos;
             this.finishedNanos = finishedNanos;
+            this.success = success;
         }
     }
 
@@ -130,7 +135,7 @@ public class TimelineHelper {
         if (moduleData.completeGoals.isEmpty()) {
             moduleData.completeGoals.add(new CompleteGoal(
                 PREPARE_GOAL, PREPARE_GOAL, null,
-                moduleData.startedNanosProject, moduleData.startedNanosProject, System.nanoTime()));
+                moduleData.startedNanosProject, moduleData.startedNanosProject, System.nanoTime(), true));
         }
         moduleData.startedGoal = new StartedGoal(System.nanoTime());
     }
@@ -147,7 +152,6 @@ public class TimelineHelper {
 
     void onMojoComplete(ExecutionEvent event, boolean success) {
         // called after onCompleteMojo(MojoExecutionEvent, boolean)
-        // todo distinguish failure
         ModuleData moduleData = getModuleData(event.getProject());
 
         MojoExecution mojoExecution = event.getMojoExecution();
@@ -159,17 +163,22 @@ public class TimelineHelper {
             + (goal.equals(executionId) ? "" : "@" + executionId);
         String phase = MojoUtils.getMojoPhase(mojoExecution);
         String type = goalType(phase);
-        // may be null in case of failed execution
+        // may be null if this mojo forked a lifecycle: the nested MojoStarted/MojoSucceeded pair of the
+        // forked executions has already consumed the startedGoal of the enclosing one
         if (moduleData.startedGoal != null) {
             long preparedGoalNanos = moduleData.startedGoal.preparedGoalNanos == 0L ?
                 moduleData.startedGoal.startedNanosGoal : moduleData.startedGoal.preparedGoalNanos;
             // hint: mojoExecution.getLifecyclePhase() can be null for CLI executions
             CompleteGoal completeGoal = new CompleteGoal(goalName, type, mojoExecution.getLifecyclePhase(),
-                moduleData.startedGoal.startedNanosGoal, preparedGoalNanos, System.nanoTime());
+                moduleData.startedGoal.startedNanosGoal, preparedGoalNanos, System.nanoTime(), success);
             moduleData.completeGoals.add(completeGoal);
             moduleData.startedGoal = null;
-        } else {
-            // it may happen, that success is false
+        } else if (!success) {
+            // there is no measured span to report, yet a failure should never be silently dropped from the
+            // timeline: record a zero-length goal at the failure moment, the report renders it as a marker
+            long failedNanos = System.nanoTime();
+            moduleData.completeGoals.add(new CompleteGoal(goalName, type, mojoExecution.getLifecyclePhase(),
+                failedNanos, failedNanos, failedNanos, false));
         }
     }
 
@@ -265,7 +274,8 @@ public class TimelineHelper {
                         fromStartSec(completeGoal.startedNanos),
                         fromStartSec(completeGoal.finishedNanos),
                         TimeFormatUtils.nanosToSeconds(completeGoal.preparedNanos - completeGoal.startedNanos),
-                        TimeFormatUtils.nanosToSeconds(completeGoal.finishedNanos - completeGoal.preparedNanos)
+                        TimeFormatUtils.nanosToSeconds(completeGoal.finishedNanos - completeGoal.preparedNanos),
+                        !completeGoal.success
                     ));
                 }
                 String moduleName = duplicateArtifactIds.contains(groupArtifactId.artifactId()) ?
