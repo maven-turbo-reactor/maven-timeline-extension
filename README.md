@@ -12,7 +12,8 @@ The sample interactive report [preview](https://maven-turbo-reactor.github.io/ma
 <img src="docs/timeline.png" alt="Timeline" width="700"/>
 
 The report is generated at `target/timeline/build-report.html` under the root project directory, it's a single HTML file
-with all needed resources. The chart UI is built using the [D3.js](https://d3js.org/).
+with the build data inlined. The chart UI is built using the [D3.js](https://d3js.org/), which is loaded from a CDN, so
+viewing the report requires network access.
 
 To set up the extension add to `.mvn/extensions.xml` in the root of the project
 ```xml
