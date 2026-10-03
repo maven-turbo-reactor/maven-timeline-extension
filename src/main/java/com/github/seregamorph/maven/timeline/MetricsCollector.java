@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,8 @@ public class MetricsCollector {
         (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     private final ResolverIoStats resolverIoStats;
+    @Nullable
+    private final DockerContainersCollector dockerContainersCollector;
 
     private final long startNanos;
     private final Thread worker;
@@ -50,9 +53,14 @@ public class MetricsCollector {
     // @GuardedBy("metrics")
     private double lastSystemCpuLoad = 0d;
 
-    public MetricsCollector(ResolverIoStats resolverIoStats, long startNanos) {
+    public MetricsCollector(
+        ResolverIoStats resolverIoStats,
+        @Nullable DockerContainersCollector dockerContainersCollector,
+        long startNanos
+    ) {
         this.startNanos = startNanos;
         this.resolverIoStats = resolverIoStats;
+        this.dockerContainersCollector = dockerContainersCollector;
         // first metric
         BuildData.Metric firstMetric;
         LOGGER.debug("Scraping first metric");
@@ -108,6 +116,9 @@ public class MetricsCollector {
         long gcCount = garbageCollectorMXBean.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
         boolean gc = this.gcCount != null && this.gcCount < gcCount;
         this.gcCount = gcCount;
+        // the docker poller is slower than this cycle, so the latest counts are carried forward
+        DockerContainersCollector.Snapshot docker = dockerContainersCollector == null
+            ? null : dockerContainersCollector.getSnapshot();
         // resolver I/O rates are filled in as a post-processing step (see fillResolverRates),
         // since a transfer's throughput must be spread across the sampling windows it spans -
         // including ones already emitted before the transfer completed
@@ -122,7 +133,9 @@ public class MetricsCollector {
             totalThreads,
             daemonThreads,
             BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP),
-            BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP)
+            BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP),
+            docker == null ? null : docker.total,
+            docker == null ? null : docker.testcontainers
         );
     }
 
@@ -145,6 +158,16 @@ public class MetricsCollector {
             lastMetric.setGc(false);
 
             fillResolverRates(result, resolverIoStats.getTransfers());
+
+            if (dockerContainersCollector != null) {
+                dockerContainersCollector.stop();
+            }
+            // the report hides the docker chart when the fields are absent
+            boolean anyContainers = result.stream().anyMatch(metric ->
+                metric.getDockerContainers() != null && metric.getDockerContainers() > 0);
+            if (!anyContainers) {
+                result.forEach(metric -> metric.setDockerContainers(null, null));
+            }
 
             metrics.notify();
             return result;
