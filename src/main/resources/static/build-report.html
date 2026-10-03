@@ -101,6 +101,7 @@
   <div class="panel"><div class="panel-title">Navigator — drag to scroll, resize handles to zoom</div><div id="nav"></div></div>
   <div class="panel"><div class="panel-title">CPU utilization (%)</div><div id="cpu"></div></div>
   <div class="panel"><div class="panel-title">Live threads (total / daemon)</div><div id="threads"></div></div>
+  <div class="panel" id="dockerPanel" style="display:none"><div class="panel-title">Docker containers (total / Testcontainers)</div><div id="docker"></div></div>
   <div class="panel"><div class="panel-title">Heap memory (used / committed / GC triggered)</div><div id="heap"></div></div>
   <div class="panel"><div class="panel-title">Resolver I/O (MB/s)</div><div id="resolverIo"></div></div>
   <div class="panel">
@@ -402,7 +403,9 @@ function buildMetric(id,opts){
   const W=width(), H=opts.height, innerW=W-M.left-M.right, innerH=H-M.top-M.bottom;
   const svg=d3.select("#"+id).html("").append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
   const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
-  const yMax=opts.yMax ?? d3.max(opts.series.flatMap(s=>metrics.map(m=>m[s.key])))*1.1;
+  // a missing value (e.g. docker counts before the first poll) reads as 0
+  const val=(m,key)=>m[key]??0;
+  const yMax=opts.yMax ?? d3.max(opts.series.flatMap(s=>metrics.map(m=>val(m,s.key))))*1.1;
   const y=d3.scaleLinear().domain([0,yMax]).range([innerH,0]).nice();
 
   g.append("g").attr("class","grid")
@@ -426,7 +429,7 @@ function buildMetric(id,opts){
   function draw(){
     xAxisG.call(d3.axisBottom(xz).ticks(10).tickFormat(fmtAxisZoomed()));
     opts.series.forEach((s,i)=>{
-      const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(m[s.key]));
+      const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(val(m,s.key)));
       paths[i].attr("d",area(metrics));
     });
     if(opts.gcMarkers){
@@ -444,7 +447,7 @@ function buildMetric(id,opts){
       moveCrosshair(tVal);
       const m=metrics[Math.max(0,Math.min(metrics.length-1,bisect(metrics,tVal)))];
       let rows=`<b>t = ${fmtTime(m.t)}</b>`;
-      opts.series.forEach(s=>rows+=`<br><span class="row">${s.label}: <b>${(opts.fmtY?opts.fmtY(m[s.key]):Math.round(m[s.key]))}${opts.unit||""}</b></span>`);
+      opts.series.forEach(s=>rows+=`<br><span class="row">${s.label}: <b>${(opts.fmtY?opts.fmtY(val(m,s.key)):Math.round(val(m,s.key)))}${opts.unit||""}</b></span>`);
       if(m.gc&&opts.gcMarkers)rows+=`<br><span class="row" style="color:#ffd479">⟳ GC pause</span>`;
       showTip(rows,ev);
     })
@@ -592,6 +595,13 @@ function buildAll(){
   charts.push(buildMetric("threads",{height:64,series:[
     {key:"totalThreads",label:"Total threads",color:"#7c9fe8",fill:"#a8c1f2",fillOpacity:0.45},
     {key:"daemonThreads",label:"Daemon threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.5}]}));
+  // the fields are absent unless docker was available and a container was seen during the build;
+  // Testcontainers ones are a subset of the total, nested inside it like the daemon threads
+  const hasDocker=(d3.max(metrics,m=>m.dockerContainers||0)||0)>0;
+  d3.select("#dockerPanel").style("display",hasDocker?null:"none");
+  if(hasDocker) charts.push(buildMetric("docker",{height:64,series:[
+    {key:"dockerContainers",label:"Total containers",color:"#3a9a9f",fill:"#7cc7c9",fillOpacity:0.45},
+    {key:"testcontainersContainers",label:"Testcontainers",color:"#0e6e74",fill:"#2a9097",fillOpacity:0.55}]}));
   charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2).replace(/\.00$/,""),series:[
     {key:"resolverDownload",label:"download",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4},
     {key:"resolverUpload",label:"upload",color:"#b07cc6",fill:"#c79ad8",fillOpacity:0.4}]}));
