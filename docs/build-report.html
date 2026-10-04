@@ -101,6 +101,7 @@
   <div class="panel"><div class="panel-title">Navigator — drag to scroll, resize handles to zoom</div><div id="nav"></div></div>
   <div class="panel"><div class="panel-title">CPU utilization (%)</div><div id="cpu"></div></div>
   <div class="panel"><div class="panel-title">Live threads (total / daemon)</div><div id="threads"></div></div>
+  <div class="panel" id="dockerPanel" style="display:none"><div class="panel-title">Docker containers (total / Testcontainers)</div><div id="docker"></div></div>
   <div class="panel"><div class="panel-title">Heap memory (used / committed / GC triggered)</div><div id="heap"></div></div>
   <div class="panel"><div class="panel-title">Resolver I/O (MB/s)</div><div id="resolverIo"></div></div>
   <div class="panel">
@@ -2032,7 +2033,9 @@
       "totalThreads" : 8,
       "daemonThreads" : 7,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 0.276649,
@@ -2045,7 +2048,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.346,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 0.531776,
@@ -2058,7 +2063,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.478,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 0.786910,
@@ -2071,7 +2078,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.355,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 1.042020,
@@ -2084,7 +2093,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 9.771,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 1.297153,
@@ -2097,7 +2108,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 1.552377,
@@ -2110,7 +2123,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 1.806582,
@@ -2123,7 +2138,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.367,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 2.060498,
@@ -2136,7 +2153,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.061,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 2.315735,
@@ -2149,7 +2168,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.236,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 2.568815,
@@ -2162,7 +2183,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.078,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 2.823997,
@@ -2175,7 +2198,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.042,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 3.076321,
@@ -2188,7 +2213,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.083,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 3.331549,
@@ -2201,7 +2228,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.128,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 3.582574,
@@ -2214,7 +2243,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.105,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 3.837689,
@@ -2227,7 +2258,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.097,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 4.092861,
@@ -2240,7 +2273,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.071,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 4.348030,
@@ -2253,7 +2288,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.055,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 4.603274,
@@ -2266,7 +2303,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.016,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 4.856816,
@@ -2279,7 +2318,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.060,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 5.112012,
@@ -2292,7 +2333,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.199,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 5.367172,
@@ -2305,7 +2348,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.027,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 5.622349,
@@ -2318,7 +2363,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.096,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 5.877675,
@@ -2331,7 +2378,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.031,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 6.132916,
@@ -2344,7 +2393,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.019,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 6.385022,
@@ -2357,7 +2408,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.028,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 6.640284,
@@ -2370,7 +2423,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.045,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 6.893814,
@@ -2383,7 +2438,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.026,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 7.149007,
@@ -2396,7 +2453,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.020,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 7.404453,
@@ -2409,7 +2468,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.020,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 7.659699,
@@ -2422,7 +2483,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.048,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 7.915054,
@@ -2435,7 +2498,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.299,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 8.166541,
@@ -2448,7 +2513,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.247,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 8.418817,
@@ -2461,7 +2528,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.062,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 8.673063,
@@ -2474,7 +2543,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.242,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 8.928230,
@@ -2487,7 +2558,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.110,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 9.183334,
@@ -2500,7 +2573,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.108,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 9.438492,
@@ -2513,7 +2588,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.164,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 9.693681,
@@ -2526,7 +2603,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.035,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 9.949068,
@@ -2539,7 +2618,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.084,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 10.204222,
@@ -2552,7 +2633,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.042,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 10.458465,
@@ -2565,7 +2648,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.030,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 10.713692,
@@ -2578,7 +2663,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.059,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 10.968417,
@@ -2591,7 +2678,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.014,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 11.223803,
@@ -2604,7 +2693,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.025,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 11.478978,
@@ -2617,7 +2708,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.009,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 11.734185,
@@ -2630,7 +2723,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.116,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 11.989481,
@@ -2643,7 +2738,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.030,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 12.244757,
@@ -2656,7 +2753,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.046,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 12.498485,
@@ -2669,7 +2768,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.042,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 12.753789,
@@ -2682,7 +2783,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.029,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 13.008964,
@@ -2695,7 +2798,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.018,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 13.264111,
@@ -2708,7 +2813,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.041,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 13.519252,
@@ -2721,7 +2828,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.034,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 13.774483,
@@ -2734,7 +2843,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.546,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 14.029852,
@@ -2747,7 +2858,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.213,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 14.285023,
@@ -2760,7 +2873,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.037,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 14.540224,
@@ -2773,7 +2888,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.035,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 14.795556,
@@ -2786,7 +2903,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.031,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 15.050905,
@@ -2799,7 +2918,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.047,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 15.306096,
@@ -2812,7 +2933,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.025,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 15.560985,
@@ -2825,7 +2948,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.013,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 15.815591,
@@ -2838,7 +2963,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.100,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 16.070808,
@@ -2851,7 +2978,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.036,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 16.322971,
@@ -2864,7 +2993,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.014,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 16.578224,
@@ -2877,7 +3008,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.042,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 16.833434,
@@ -2890,7 +3023,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.039,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 17.085063,
@@ -2903,7 +3038,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.035,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 17.339160,
@@ -2916,7 +3053,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.370,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 17.594419,
@@ -2929,7 +3068,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.061,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 17.849582,
@@ -2942,7 +3083,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.220,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 18.104739,
@@ -2955,7 +3098,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.028,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 18.359900,
@@ -2968,7 +3113,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.145,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 18.615103,
@@ -2981,7 +3128,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.068,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 18.870436,
@@ -2994,7 +3143,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.354,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 19.125571,
@@ -3007,7 +3158,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.081,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 19.380753,
@@ -3020,7 +3173,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.086,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 19.635947,
@@ -3033,7 +3188,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.026,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 19.891191,
@@ -3046,7 +3203,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.103,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 20.146301,
@@ -3059,7 +3218,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.092,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 20.401428,
@@ -3072,7 +3233,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.023,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 20.656612,
@@ -3085,7 +3248,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.033,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 20.910995,
@@ -3098,7 +3263,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.022,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 21.166067,
@@ -3111,7 +3278,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.049,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 21.421413,
@@ -3124,7 +3293,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.022,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 21.672817,
@@ -3137,7 +3308,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.018,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 21.928047,
@@ -3150,7 +3323,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.054,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 22.181330,
@@ -3163,7 +3338,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.417,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 22.436487,
@@ -3176,7 +3353,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.058,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 22.691668,
@@ -3189,7 +3368,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.054,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 22.946691,
@@ -3202,7 +3383,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.192,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 23.201469,
@@ -3215,7 +3398,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.132,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 23.455446,
@@ -3228,7 +3413,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.289,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 23.710497,
@@ -3241,7 +3428,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.068,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 23.965613,
@@ -3254,7 +3443,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.053,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 24.220774,
@@ -3267,7 +3458,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.030,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 24.475941,
@@ -3280,7 +3473,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.090,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 24.727710,
@@ -3293,7 +3488,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.192,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 24.982828,
@@ -3306,7 +3503,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.026,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 25.237961,
@@ -3319,7 +3518,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.022,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 25.493093,
@@ -3332,7 +3533,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.033,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 25.748266,
@@ -3345,7 +3548,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.030,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 26.003559,
@@ -3358,7 +3563,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.041,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 26.258786,
@@ -3371,7 +3578,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.023,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 26.513348,
@@ -3384,7 +3593,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.017,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 26.768529,
@@ -3397,7 +3608,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.047,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 27.023738,
@@ -3410,7 +3623,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.404,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 27.279186,
@@ -3423,7 +3638,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.169,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 27.534549,
@@ -3436,7 +3653,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.073,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 27.789701,
@@ -3449,7 +3668,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.294,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 28.044870,
@@ -3462,7 +3683,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.107,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 28.300024,
@@ -3475,7 +3698,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.028,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 28.555173,
@@ -3488,7 +3713,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.050,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 28.810346,
@@ -3501,7 +3728,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.033,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 29.064906,
@@ -3514,7 +3743,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.066,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 29.320009,
@@ -3527,7 +3758,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.043,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 29.575187,
@@ -3540,7 +3773,9 @@
       "totalThreads" : 9,
       "daemonThreads" : 7,
       "resolverDownload" : 0.036,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 29.827638,
@@ -3553,7 +3788,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.034,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 30.082718,
@@ -3566,7 +3803,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.642,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 30.337825,
@@ -3579,7 +3818,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 2.177,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 30.592937,
@@ -3592,7 +3833,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.519,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 30.848872,
@@ -3605,7 +3848,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.783,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 31.104044,
@@ -3618,7 +3863,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.392,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 31.356801,
@@ -3631,7 +3878,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 1.085,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 31.611912,
@@ -3644,7 +3893,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.260,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 31.867053,
@@ -3657,7 +3908,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.612,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 32.122201,
@@ -3670,7 +3923,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 2.557,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 32.377387,
@@ -3683,7 +3938,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.072,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 32.632762,
@@ -3696,7 +3953,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.041,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 32.887976,
@@ -3709,7 +3968,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.177,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 33.143126,
@@ -3722,7 +3983,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.282,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 33.398273,
@@ -3735,7 +3998,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.168,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 33.653435,
@@ -3748,7 +4013,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.151,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 33.906360,
@@ -3761,7 +4028,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 17.504,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 34.161569,
@@ -3774,7 +4043,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 34.414675,
@@ -3787,7 +4058,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 34.669307,
@@ -3800,7 +4073,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 34.924469,
@@ -3813,7 +4088,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 35.179588,
@@ -3826,7 +4103,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 35.434678,
@@ -3839,7 +4118,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 35.689815,
@@ -3852,7 +4133,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 35.944986,
@@ -3865,7 +4148,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 28.678,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 36.196248,
@@ -3878,7 +4163,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 20.293,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 36.451307,
@@ -3891,7 +4178,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.297,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 36.706410,
@@ -3904,7 +4193,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.548,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 36.961549,
@@ -3917,7 +4208,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 3.422,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 37.216711,
@@ -3930,7 +4223,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.342,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 37.471856,
@@ -3943,7 +4238,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.460,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 37.727024,
@@ -3956,7 +4253,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.559,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 37.982205,
@@ -3969,7 +4268,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.475,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 38.237333,
@@ -3982,7 +4283,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.494,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 38.492494,
@@ -3995,7 +4298,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.662,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 38.747689,
@@ -4008,7 +4313,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.205,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 39.002835,
@@ -4021,7 +4328,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.261,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 39.257984,
@@ -4034,7 +4343,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.594,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 39.513127,
@@ -4047,7 +4358,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 1.035,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 39.768278,
@@ -4060,7 +4373,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.627,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 40.023443,
@@ -4073,7 +4388,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.306,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 40.278627,
@@ -4086,7 +4403,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.439,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 40.533778,
@@ -4099,7 +4418,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 6.374,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 40.787438,
@@ -4112,7 +4433,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 12,
       "resolverDownload" : 13.765,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 41.042597,
@@ -4125,7 +4448,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 1.269,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 41.297763,
@@ -4138,7 +4463,9 @@
       "totalThreads" : 10,
       "daemonThreads" : 7,
       "resolverDownload" : 0.094,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 41.551868,
@@ -4151,7 +4478,9 @@
       "totalThreads" : 11,
       "daemonThreads" : 8,
       "resolverDownload" : 14.423,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 41.806795,
@@ -4164,7 +4493,9 @@
       "totalThreads" : 12,
       "daemonThreads" : 7,
       "resolverDownload" : 1.430,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 42.061892,
@@ -4177,7 +4508,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.696,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 42.317018,
@@ -4190,7 +4523,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.850,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 42.572180,
@@ -4203,7 +4538,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.580,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 42.827325,
@@ -4216,7 +4553,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 3.719,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 43.082461,
@@ -4229,7 +4568,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.349,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 43.337566,
@@ -4242,7 +4583,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.504,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 43.592651,
@@ -4255,7 +4598,9 @@
       "totalThreads" : 13,
       "daemonThreads" : 7,
       "resolverDownload" : 0.545,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 43.847718,
@@ -4268,7 +4613,9 @@
       "totalThreads" : 18,
       "daemonThreads" : 12,
       "resolverDownload" : 12.836,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 44.102852,
@@ -4281,7 +4628,9 @@
       "totalThreads" : 22,
       "daemonThreads" : 16,
       "resolverDownload" : 17.116,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 44.357995,
@@ -4294,7 +4643,9 @@
       "totalThreads" : 22,
       "daemonThreads" : 16,
       "resolverDownload" : 15.683,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 44.613082,
@@ -4307,7 +4658,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 7.159,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 44.868177,
@@ -4320,7 +4673,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 45.123300,
@@ -4333,7 +4688,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 45.378463,
@@ -4346,7 +4703,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 45.633580,
@@ -4359,7 +4718,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 45.888687,
@@ -4372,7 +4733,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 46.138988,
@@ -4385,7 +4748,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 46.394092,
@@ -4398,7 +4763,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 46.649188,
@@ -4411,7 +4778,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 46.904266,
@@ -4424,7 +4793,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 47.159370,
@@ -4437,7 +4808,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 47.414505,
@@ -4450,7 +4823,9 @@
       "totalThreads" : 17,
       "daemonThreads" : 11,
       "resolverDownload" : 0.044,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 47.667920,
@@ -4463,7 +4838,9 @@
       "totalThreads" : 21,
       "daemonThreads" : 15,
       "resolverDownload" : 2.545,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 47.923080,
@@ -4476,7 +4853,9 @@
       "totalThreads" : 24,
       "daemonThreads" : 18,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 48.174954,
@@ -4489,7 +4868,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 12,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 48.430082,
@@ -4502,7 +4883,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 12,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 48.681351,
@@ -4515,7 +4898,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 12,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 48.936498,
@@ -4528,7 +4913,9 @@
       "totalThreads" : 18,
       "daemonThreads" : 12,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 49.189340,
@@ -4541,7 +4928,9 @@
       "totalThreads" : 18,
       "daemonThreads" : 12,
       "resolverDownload" : 0.014,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 49.444465,
@@ -4554,7 +4943,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.012,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 49.699604,
@@ -4567,7 +4958,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.014,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 49.951909,
@@ -4580,7 +4973,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.012,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 50.207093,
@@ -4593,7 +4988,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.004,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 50.458969,
@@ -4606,7 +5003,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 50.714095,
@@ -4619,7 +5018,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 9.832,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 50.969289,
@@ -4632,7 +5033,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 8.301,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 51.224419,
@@ -4645,7 +5048,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.067,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 51.479512,
@@ -4658,7 +5063,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.053,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 51.734619,
@@ -4671,7 +5078,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.218,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 51.989681,
@@ -4684,7 +5093,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.157,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 52.244767,
@@ -4697,7 +5108,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.090,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 52.499883,
@@ -4710,7 +5123,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.177,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 52.755023,
@@ -4723,7 +5138,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.103,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 53.010145,
@@ -4736,7 +5153,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.172,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 53.265275,
@@ -4749,7 +5168,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.463,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 53.520391,
@@ -4762,7 +5183,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.053,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 53.775512,
@@ -4775,7 +5198,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.033,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 54.030650,
@@ -4788,7 +5213,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 19.557,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 54.285749,
@@ -4801,7 +5228,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 17.080,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 54.540944,
@@ -4814,7 +5243,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.037,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 54.796060,
@@ -4827,7 +5258,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.016,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 55.051196,
@@ -4840,7 +5273,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 16.372,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 1,
+      "testcontainersContainers" : 0
     },
     {
       "t" : 55.306325,
@@ -4853,7 +5288,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 19.465,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 55.561539,
@@ -4866,7 +5303,9 @@
       "totalThreads" : 18,
       "daemonThreads" : 12,
       "resolverDownload" : 11.641,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 55.815661,
@@ -4879,7 +5318,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 0.074,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 56.070751,
@@ -4892,7 +5333,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 0.061,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 56.323002,
@@ -4905,7 +5348,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.282,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 56.578082,
@@ -4918,7 +5363,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.230,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 56.833209,
@@ -4931,7 +5378,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.070,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 57.088351,
@@ -4944,7 +5393,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.073,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 57.343478,
@@ -4957,7 +5408,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.239,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 57.598617,
@@ -4970,7 +5423,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.103,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 57.853731,
@@ -4983,7 +5438,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.067,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 58.108847,
@@ -4996,7 +5453,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.060,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 58.362003,
@@ -5009,7 +5468,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.439,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 58.617153,
@@ -5022,7 +5483,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.153,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 58.872277,
@@ -5035,7 +5498,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.145,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 59.127414,
@@ -5048,7 +5513,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 0.206,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 59.382562,
@@ -5061,7 +5528,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.144,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 59.637737,
@@ -5074,7 +5543,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.038,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 59.892863,
@@ -5087,7 +5558,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.026,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 60.147991,
@@ -5100,7 +5573,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.033,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 60.403076,
@@ -5113,7 +5588,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 17.772,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 60.656356,
@@ -5126,7 +5603,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.611,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 60.911477,
@@ -5139,7 +5618,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.619,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 61.166605,
@@ -5152,7 +5633,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.628,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 61.421725,
@@ -5165,7 +5648,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 7.305,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 61.676857,
@@ -5178,7 +5663,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.526,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 61.931974,
@@ -5191,7 +5678,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.535,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 62.187087,
@@ -5204,7 +5693,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.521,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 62.442211,
@@ -5217,7 +5708,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.527,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 62.697348,
@@ -5230,7 +5723,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.596,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 62.952495,
@@ -5243,7 +5738,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.505,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 63.207663,
@@ -5256,7 +5753,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.520,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 63.462837,
@@ -5269,7 +5768,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.518,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 63.717987,
@@ -5282,7 +5783,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.512,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 63.973099,
@@ -5295,7 +5798,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.515,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 64.228328,
@@ -5308,7 +5813,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.503,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 64.483463,
@@ -5321,7 +5828,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.507,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 64.738629,
@@ -5334,7 +5843,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.510,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 64.993853,
@@ -5347,7 +5858,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.512,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 65.245654,
@@ -5360,7 +5873,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.522,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 65.500964,
@@ -5373,7 +5888,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.513,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 65.756129,
@@ -5386,7 +5903,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.497,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 66.011072,
@@ -5399,7 +5918,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.496,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 66.265728,
@@ -5412,7 +5933,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 2.496,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 66.521012,
@@ -5425,7 +5948,9 @@
       "totalThreads" : 15,
       "daemonThreads" : 9,
       "resolverDownload" : 9.127,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 66.773007,
@@ -5438,7 +5963,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 16.384,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 67.028078,
@@ -5451,7 +5978,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 4.672,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 67.283146,
@@ -5464,7 +5993,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 67.538215,
@@ -5477,7 +6008,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 67.793296,
@@ -5490,7 +6023,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 68.045382,
@@ -5503,7 +6038,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 15.244,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 68.298031,
@@ -5516,7 +6053,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 23.537,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 68.553175,
@@ -5529,7 +6068,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 23.537,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 68.806715,
@@ -5542,7 +6083,9 @@
       "totalThreads" : 21,
       "daemonThreads" : 15,
       "resolverDownload" : 15.969,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 69.061837,
@@ -5555,7 +6098,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 69.317000,
@@ -5568,7 +6113,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 69.569346,
@@ -5581,7 +6128,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 69.824429,
@@ -5594,7 +6143,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.016,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 70.079560,
@@ -5607,7 +6158,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.014,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 70.334693,
@@ -5620,7 +6173,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 17.149,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 70.585549,
@@ -5633,7 +6188,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 19.477,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 70.840703,
@@ -5646,7 +6203,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 19.475,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 71.095848,
@@ -5659,7 +6218,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 19.473,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 71.351066,
@@ -5672,7 +6233,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 10.025,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 71.606321,
@@ -5685,7 +6248,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 0.118,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 71.861462,
@@ -5698,7 +6263,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 0.419,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 72.116569,
@@ -5711,7 +6278,9 @@
       "totalThreads" : 27,
       "daemonThreads" : 21,
       "resolverDownload" : 0.327,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 72.368867,
@@ -5724,7 +6293,9 @@
       "totalThreads" : 32,
       "daemonThreads" : 26,
       "resolverDownload" : 12.996,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 72.624011,
@@ -5737,7 +6308,9 @@
       "totalThreads" : 32,
       "daemonThreads" : 26,
       "resolverDownload" : 22.419,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 72.879147,
@@ -5750,7 +6323,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.356,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 73.134285,
@@ -5763,7 +6338,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.446,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 73.389409,
@@ -5776,7 +6353,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.373,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 73.644580,
@@ -5789,7 +6368,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.363,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 73.899721,
@@ -5802,7 +6383,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.350,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 74.154833,
@@ -5815,7 +6398,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 20,
       "resolverDownload" : 22.522,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 74.409953,
@@ -5828,7 +6413,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.477,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 74.665100,
@@ -5841,7 +6428,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.361,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 74.920228,
@@ -5854,7 +6443,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 22.487,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 75.175333,
@@ -5867,7 +6458,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 3.814,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 75.430394,
@@ -5880,7 +6473,9 @@
       "totalThreads" : 20,
       "daemonThreads" : 14,
       "resolverDownload" : 0.071,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 75.685458,
@@ -5893,7 +6488,9 @@
       "totalThreads" : 21,
       "daemonThreads" : 14,
       "resolverDownload" : 0.098,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 75.940564,
@@ -5906,7 +6503,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 0.137,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 76.194126,
@@ -5919,7 +6518,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 0.134,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 76.449207,
@@ -5932,7 +6533,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 0.034,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 76.704296,
@@ -5945,7 +6548,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 0.156,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 76.959387,
@@ -5958,7 +6563,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 0.052,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 77.214353,
@@ -5971,7 +6578,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 0.084,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 77.469443,
@@ -5984,7 +6593,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 0.002,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 77.724547,
@@ -5997,7 +6608,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 8.823,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 77.979686,
@@ -6010,7 +6623,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 20.081,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 78.234770,
@@ -6023,7 +6638,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 12.233,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 78.489759,
@@ -6036,7 +6653,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 0.024,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 78.744423,
@@ -6049,7 +6668,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 78.999750,
@@ -6062,7 +6683,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 2,
+      "testcontainersContainers" : 1
     },
     {
       "t" : 79.255012,
@@ -6075,7 +6698,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 7.337,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 79.507635,
@@ -6088,7 +6713,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 24.491,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 79.762740,
@@ -6101,7 +6728,9 @@
       "totalThreads" : 31,
       "daemonThreads" : 24,
       "resolverDownload" : 24.491,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 80.017840,
@@ -6114,7 +6743,9 @@
       "totalThreads" : 26,
       "daemonThreads" : 19,
       "resolverDownload" : 20.287,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 80.272958,
@@ -6127,7 +6758,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.216,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 80.524012,
@@ -6140,7 +6773,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 80.779945,
@@ -6153,7 +6788,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 81.033948,
@@ -6166,7 +6803,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 81.289073,
@@ -6179,7 +6818,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 81.544165,
@@ -6192,7 +6833,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 81.798054,
@@ -6205,7 +6848,9 @@
       "totalThreads" : 46,
       "daemonThreads" : 39,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 82.052688,
@@ -6218,7 +6863,9 @@
       "totalThreads" : 40,
       "daemonThreads" : 33,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 82.307841,
@@ -6231,7 +6878,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 82.563025,
@@ -6244,7 +6893,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 82.817865,
@@ -6257,7 +6908,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 83.072954,
@@ -6270,7 +6923,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 83.328059,
@@ -6283,7 +6938,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 83.583164,
@@ -6296,7 +6953,9 @@
       "totalThreads" : 45,
       "daemonThreads" : 38,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 83.838497,
@@ -6309,7 +6968,9 @@
       "totalThreads" : 39,
       "daemonThreads" : 32,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 84.090351,
@@ -6322,7 +6983,9 @@
       "totalThreads" : 39,
       "daemonThreads" : 32,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 5,
+      "testcontainersContainers" : 4
     },
     {
       "t" : 84.343464,
@@ -6335,7 +6998,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 84.594541,
@@ -6348,7 +7013,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 84.849773,
@@ -6361,7 +7028,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 85.105105,
@@ -6374,7 +7043,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 4,
+      "testcontainersContainers" : 3
     },
     {
       "t" : 85.360215,
@@ -6387,7 +7058,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 85.615407,
@@ -6400,7 +7073,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 85.870655,
@@ -6413,7 +7088,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 86.121052,
@@ -6426,7 +7103,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 86.371554,
@@ -6439,7 +7118,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 86.624964,
@@ -6452,7 +7133,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 86.880091,
@@ -6465,7 +7148,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 87.135171,
@@ -6478,7 +7163,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 87.388664,
@@ -6491,7 +7178,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 87.643536,
@@ -6504,7 +7193,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 87.898637,
@@ -6517,7 +7208,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 88.153742,
@@ -6530,7 +7223,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 88.408838,
@@ -6543,7 +7238,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 88.663931,
@@ -6556,7 +7253,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 88.919019,
@@ -6569,7 +7268,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 89.174108,
@@ -6582,7 +7283,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 89.429213,
@@ -6595,7 +7298,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 89.684366,
@@ -6608,7 +7313,9 @@
       "totalThreads" : 33,
       "daemonThreads" : 26,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     },
     {
       "t" : 89.879076,
@@ -6621,7 +7328,9 @@
       "totalThreads" : 23,
       "daemonThreads" : 20,
       "resolverDownload" : 0.000,
-      "resolverUpload" : 0.000
+      "resolverUpload" : 0.000,
+      "dockerContainers" : 3,
+      "testcontainersContainers" : 2
     }
   ]
 }</script>
@@ -6906,7 +7615,9 @@ function buildMetric(id,opts){
   const W=width(), H=opts.height, innerW=W-M.left-M.right, innerH=H-M.top-M.bottom;
   const svg=d3.select("#"+id).html("").append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
   const g=svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
-  const yMax=opts.yMax ?? d3.max(opts.series.flatMap(s=>metrics.map(m=>m[s.key])))*1.1;
+  // a missing value (e.g. docker counts before the first poll) reads as 0
+  const val=(m,key)=>m[key]??0;
+  const yMax=opts.yMax ?? d3.max(opts.series.flatMap(s=>metrics.map(m=>val(m,s.key))))*1.1;
   const y=d3.scaleLinear().domain([0,yMax]).range([innerH,0]).nice();
 
   g.append("g").attr("class","grid")
@@ -6930,7 +7641,7 @@ function buildMetric(id,opts){
   function draw(){
     xAxisG.call(d3.axisBottom(xz).ticks(10).tickFormat(fmtAxisZoomed()));
     opts.series.forEach((s,i)=>{
-      const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(m[s.key]));
+      const area=d3.area().x(m=>xz(m.t)).y0(innerH).y1(m=>y(val(m,s.key)));
       paths[i].attr("d",area(metrics));
     });
     if(opts.gcMarkers){
@@ -6948,7 +7659,7 @@ function buildMetric(id,opts){
       moveCrosshair(tVal);
       const m=metrics[Math.max(0,Math.min(metrics.length-1,bisect(metrics,tVal)))];
       let rows=`<b>t = ${fmtTime(m.t)}</b>`;
-      opts.series.forEach(s=>rows+=`<br><span class="row">${s.label}: <b>${(opts.fmtY?opts.fmtY(m[s.key]):Math.round(m[s.key]))}${opts.unit||""}</b></span>`);
+      opts.series.forEach(s=>rows+=`<br><span class="row">${s.label}: <b>${(opts.fmtY?opts.fmtY(val(m,s.key)):Math.round(val(m,s.key)))}${opts.unit||""}</b></span>`);
       if(m.gc&&opts.gcMarkers)rows+=`<br><span class="row" style="color:#ffd479">⟳ GC pause</span>`;
       showTip(rows,ev);
     })
@@ -7096,6 +7807,13 @@ function buildAll(){
   charts.push(buildMetric("threads",{height:64,series:[
     {key:"totalThreads",label:"Total threads",color:"#7c9fe8",fill:"#a8c1f2",fillOpacity:0.45},
     {key:"daemonThreads",label:"Daemon threads",color:"#2f6fed",fill:"#5b8def",fillOpacity:0.5}]}));
+  // the fields are absent unless docker was available and a container was seen during the build;
+  // Testcontainers ones are a subset of the total, nested inside it like the daemon threads
+  const hasDocker=(d3.max(metrics,m=>m.dockerContainers||0)||0)>0;
+  d3.select("#dockerPanel").style("display",hasDocker?null:"none");
+  if(hasDocker) charts.push(buildMetric("docker",{height:64,series:[
+    {key:"dockerContainers",label:"Total containers",color:"#3a9a9f",fill:"#7cc7c9",fillOpacity:0.45},
+    {key:"testcontainersContainers",label:"Testcontainers",color:"#0e6e74",fill:"#2a9097",fillOpacity:0.55}]}));
   charts.push(buildMetric("resolverIo",{height:64,unit:" MB/s",fmtY:v=>(+v).toFixed(2).replace(/\.00$/,""),series:[
     {key:"resolverDownload",label:"download",color:"#2f8f6b",fill:"#46b289",fillOpacity:0.4},
     {key:"resolverUpload",label:"upload",color:"#b07cc6",fill:"#c79ad8",fillOpacity:0.4}]}));

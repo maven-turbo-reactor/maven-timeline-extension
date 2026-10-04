@@ -27,6 +27,12 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
      */
     static final String JSON_REPORT_PROPERTY = "timelineJsonReport";
 
+    /**
+     * When set to {@code false} (as a system or user property), running docker containers are not tracked.
+     * By default they are listed via the {@code docker ps} CLI, if available.
+     */
+    static final String DOCKER_PROPERTY = "timelineDocker";
+
     // token in static/build-report.html replaced with the inlined JSON for the self-contained report
     private static final String BUILD_DATA_PLACEHOLDER = "__TIMELINE_BUILD_DATA__";
 
@@ -48,7 +54,8 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
             // so should not start the daemon threads
         } else {
             logger.info("Starting build timeline metrics gathering");
-            this.timelineHelper.init();
+            boolean trackDocker = !"false".equals(MavenPropertyUtils.getProperty(session, DOCKER_PROPERTY));
+            this.timelineHelper.init(trackDocker);
         }
     }
 

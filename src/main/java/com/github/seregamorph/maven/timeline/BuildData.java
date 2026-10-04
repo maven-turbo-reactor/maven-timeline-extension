@@ -239,6 +239,11 @@ public final class BuildData {
         // computed as a post-processing step from recorded transfer intervals, hence mutable
         private BigDecimal resolverDownload;
         private BigDecimal resolverUpload;
+        // running docker containers (all / created by Testcontainers), null if docker is not tracked
+        @Nullable
+        private Integer dockerContainers;
+        @Nullable
+        private Integer testcontainersContainers;
 
         @JsonCreator
         public Metric(
@@ -252,7 +257,9 @@ public final class BuildData {
             @JsonProperty("totalThreads") int totalThreads,
             @JsonProperty("daemonThreads") int daemonThreads,
             @JsonProperty("resolverDownload") BigDecimal resolverDownload,
-            @JsonProperty("resolverUpload") BigDecimal resolverUpload
+            @JsonProperty("resolverUpload") BigDecimal resolverUpload,
+            @JsonProperty("dockerContainers") @Nullable Integer dockerContainers,
+            @JsonProperty("testcontainersContainers") @Nullable Integer testcontainersContainers
         ) {
             this.t = t;
             this.active = active;
@@ -265,6 +272,8 @@ public final class BuildData {
             this.daemonThreads = daemonThreads;
             this.resolverDownload = resolverDownload;
             this.resolverUpload = resolverUpload;
+            this.dockerContainers = dockerContainers;
+            this.testcontainersContainers = testcontainersContainers;
         }
 
         public BigDecimal getT() {
@@ -321,6 +330,26 @@ public final class BuildData {
 
         public void setResolverUpload(BigDecimal resolverUpload) {
             this.resolverUpload = resolverUpload;
+        }
+
+        /**
+         * Omitted when docker is not available or no container was seen during the build.
+         */
+        @Nullable
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public Integer getDockerContainers() {
+            return dockerContainers;
+        }
+
+        @Nullable
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public Integer getTestcontainersContainers() {
+            return testcontainersContainers;
+        }
+
+        public void setDockerContainers(@Nullable Integer dockerContainers, @Nullable Integer testcontainersContainers) {
+            this.dockerContainers = dockerContainers;
+            this.testcontainersContainers = testcontainersContainers;
         }
     }
 

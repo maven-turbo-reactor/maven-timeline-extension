@@ -39,6 +39,10 @@ All components are JSR-330 beans discovered by Sisu. **Any new `@Named` componen
   callback is guarded by `timelineHelper.isInitialized()`.
 - `TimelineEventSpy` — receives `ExecutionEvent`s (MojoStarted/Succeeded/Failed drive goal spans) and Aether
   `RepositoryEvent`s (download/deploy transfers recorded into `ResolverIoStats`).
+- `DockerContainersCollector` (plain class, created in `init()`) — polls `docker ps` every second on its own daemon
+  thread; `MetricsCollector` reads its latest snapshot into `Metric.dockerContainers`/`testcontainersContainers`
+  (nulled out when no container was seen, so the report hides the chart). Testcontainers ones are matched by the
+  `org.testcontainers*` label keys (Ryuk included). Opt out with `-DtimelineDocker=false`.
 
 Key details in `TimelineHelper`:
 - Worker thread ids are assigned lazily via a `ThreadLocal` counter; state is reset in `init()` so the extension

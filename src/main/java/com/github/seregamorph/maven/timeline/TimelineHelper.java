@@ -104,16 +104,20 @@ public class TimelineHelper {
         return initialized;
     }
 
-    void init() {
+    void init(boolean trackDocker) {
         resolverIoStats.reset();
 
         startNanos = System.nanoTime();
-        metricsCollector = new MetricsCollector(resolverIoStats, startNanos);
+        DockerContainersCollector dockerContainersCollector = trackDocker ? new DockerContainersCollector() : null;
+        metricsCollector = new MetricsCollector(resolverIoStats, dockerContainersCollector, startNanos);
         // reset state to be maven daemon compatible
         workerThreadCounter = new AtomicInteger();
         // start with 0
         currentWorkerThreadId = ThreadLocal.withInitial(workerThreadCounter::getAndIncrement);
         threadModules = Collections.synchronizedMap(new LinkedHashMap<>());
+        if (dockerContainersCollector != null) {
+            dockerContainersCollector.start();
+        }
         metricsCollector.start();
         initialized = true;
     }
