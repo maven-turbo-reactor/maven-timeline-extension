@@ -162,15 +162,35 @@ public class MetricsCollector {
             if (dockerContainersCollector != null) {
                 dockerContainersCollector.stop();
             }
-            // the report hides the docker chart when the fields are absent
-            boolean anyContainers = result.stream().anyMatch(metric ->
-                metric.getDockerContainers() != null && metric.getDockerContainers() > 0);
-            if (!anyContainers) {
-                result.forEach(metric -> metric.setDockerContainers(null, null));
-            }
+            fillDockerContainers(result);
 
             metrics.notify();
             return result;
+        }
+    }
+
+    /**
+     * The first docker poll completes only after the first metrics are scraped, so the leading samples have no
+     * counts. Containers seen by that poll were most likely running before the build started, so its counts are
+     * back-filled rather than letting the chart start from zero. If no container was seen at all, the counts are
+     * dropped so the report hides the docker chart.
+     */
+    static void fillDockerContainers(List<BuildData.Metric> metrics) {
+        BuildData.Metric firstPolled = metrics.stream()
+            .filter(metric -> metric.getDockerContainers() != null)
+            .findFirst()
+            .orElse(null);
+        boolean anyContainers = metrics.stream().anyMatch(metric ->
+            metric.getDockerContainers() != null && metric.getDockerContainers() > 0);
+        for (BuildData.Metric metric : metrics) {
+            if (!anyContainers) {
+                metric.setDockerContainers(null, null);
+            } else if (metric == firstPolled) {
+                break;
+            } else {
+                metric.setDockerContainers(firstPolled.getDockerContainers(),
+                    firstPolled.getTestcontainersContainers());
+            }
         }
     }
 
