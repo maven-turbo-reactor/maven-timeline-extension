@@ -72,7 +72,10 @@
   table.summary tbody tr:hover td { background: #f7f9fc; }
   table.summary tfoot td { border-bottom: none; border-top: 1px solid var(--border); color: var(--muted); }
   /* proportional bar behind the goal name — total exec time relative to the slowest goal */
-  td.goal .bar { position: relative; display: inline-block; max-width: 100%; padding: 0 4px;
+  /* the bar is a background layer: the name (and failure badge) flow freely past a short bar */
+  td.goal .cell { position: relative; padding: 0 4px; }
+  td.goal .cell > span { position: relative; }
+  td.goal .bar { position: absolute; left: 0; top: 0; bottom: 0; max-width: 100%;
     border-radius: 2px; background: rgba(47,111,237,.13); }
   td.goal .bar.prep { background: rgba(155,165,177,.22); }
   td.goal .bar.failed { background: rgba(229,72,77,.18); }
@@ -558,9 +561,9 @@ function renderGoalSummary(){
   const body=rows.map(d=>{
     // bar width is share of the slowest goal, so the top row always spans the column
     const w=Math.max(2,100*d.exec/maxExec);
-    return `<tr><td class="goal"><span class="bar${isPrepare(d)?" prep":d.failures?" failed":""}" `+
-      `style="width:${w.toFixed(2)}%">${esc(d.goal)}</span>`+
-      (d.failures?`<span class="fail-badge">✕ ${d.failures} failed</span>`:"")+`</td>`+
+    return `<tr><td class="goal"><div class="cell"><i class="bar${isPrepare(d)?" prep":d.failures?" failed":""}" `+
+      `style="width:${w.toFixed(2)}%"></i><span>${esc(d.goal)}</span>`+
+      (d.failures?`<span class="fail-badge">✕ ${d.failures} failed</span>`:"")+`</div></td>`+
       `<td>${d.count}</td>`+
       `<td>${fmtSum(d.prepare)}</td>`+
       `<td>${fmtSum(d.exec)}</td>`+
