@@ -42,6 +42,8 @@
 
     <properties>
         <maven.version>4.0.0-rc-5</maven.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+        <d3.version>7.9.0</d3.version>
     </properties>
 
     <dependencies>
@@ -84,4 +86,50 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>NOTICE</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <!-- Bundle D3 into the jar so the report is self-contained (no CDN) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>unpack-d3</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.webjars.npm</groupId>
+                                    <artifactId>d3</artifactId>
+                                    <version>${d3.version}</version>
+                                    <includes>META-INF/resources/webjars/d3/${d3.version}/dist/d3.min.js</includes>
+                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

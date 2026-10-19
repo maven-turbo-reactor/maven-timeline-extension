@@ -56,10 +56,11 @@ Key details in `TimelineHelper`:
 
 ### Report (`src/main/resources/static/build-report.html`)
 
-A single static HTML/JS page (D3 v7 from CDN). The Java side replaces the `__TIMELINE_BUILD_DATA__` placeholder in
-`<script id="buildData">` with the JSON; if the placeholder is left intact, the page falls back to fetching
-`build-data.json`. The JSON shape is defined by `BuildData` (`meta`, `tasks[].goals[]`, `metrics[]`) — changes to
-`BuildData` fields must be mirrored in the page's JS.
+A single static HTML/JS page. The Java side replaces the `__TIMELINE_D3_JS__` placeholder with D3, which the build
+unpacks from the `org.webjars.npm:d3` jar (version `d3.version` in `pom.xml`) to `static/d3.min.js`. It replaces the
+`__TIMELINE_BUILD_DATA__` placeholder in `<script id="buildData">` with the JSON; if the placeholder is left intact,
+the page falls back to fetching `build-data.json`. The JSON shape is defined by `BuildData` (`meta`, `tasks[].goals[]`,
+`metrics[]`) — changes to `BuildData` fields must be mirrored in the page's JS.
 
 `docs/` is the GitHub Pages site (`index.html` landing page, `build-report.html` sample report, `timeline.png`); it is a
 separately updated copy, not generated from the resource.

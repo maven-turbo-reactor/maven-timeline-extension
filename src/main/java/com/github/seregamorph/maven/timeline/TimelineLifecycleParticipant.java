@@ -2,6 +2,8 @@ package com.github.seregamorph.maven.timeline;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
@@ -33,8 +35,13 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
      */
     static final String DOCKER_PROPERTY = "timelineDocker";
 
+    private static final String REPORT_TEMPLATE = "static/build-report.html";
+    private static final String D3_SCRIPT = "static/d3.min.js";
+
     // token in static/build-report.html replaced with the inlined JSON for the self-contained report
     private static final String BUILD_DATA_PLACEHOLDER = "__TIMELINE_BUILD_DATA__";
+    // token in static/build-report.html replaced with the bundled D3 library, so the report does not need a CDN
+    private static final String D3_PLACEHOLDER = "__TIMELINE_D3_JS__";
 
     private final TimelineHelper timelineHelper;
 
@@ -80,7 +87,6 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
         timelineDir.mkdirs();
 
         String json = new String(JsonSerializers.serialize(buildData), StandardCharsets.UTF_8);
-        String html = new String(ClasspathResources.readBytes("static/build-report.html"), StandardCharsets.UTF_8);
         File buildReportHtmlFile = new File(timelineDir, "build-report.html");
 
         boolean jsonReport = MavenPropertyUtils.isTrue(
@@ -89,12 +95,43 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
             // separate JSON file; the HTML fetches build-data.json at runtime
             File buildDataFile = new File(timelineDir, "build-data.json");
             MoreFileUtils.write(buildDataFile, json.getBytes(StandardCharsets.UTF_8));
-            MoreFileUtils.write(buildReportHtmlFile, html.getBytes(StandardCharsets.UTF_8));
+            MoreFileUtils.write(buildReportHtmlFile, renderReport(null).getBytes(StandardCharsets.UTF_8));
         } else {
             // single self-contained report with the build data inlined
-            String inlinedHtml = html.replace(BUILD_DATA_PLACEHOLDER, json);
-            MoreFileUtils.write(buildReportHtmlFile, inlinedHtml.getBytes(StandardCharsets.UTF_8));
+            MoreFileUtils.write(buildReportHtmlFile, renderReport(json).getBytes(StandardCharsets.UTF_8));
         }
         logger.info("Build timeline report generated at {}", buildReportHtmlFile);
+    }
+
+    /**
+     * Renders the report page with the bundled D3 library inlined.
+     *
+     * @param json build data to inline, or {@code null} to keep the placeholder so that the page fetches
+     *             {@code build-data.json}
+     */
+    static String renderReport(@Nullable String json) {
+        String d3 = requireInlineable(readUtf8(D3_SCRIPT), D3_SCRIPT);
+        // D3 goes in first, so that a D3 token inside the build data is not expanded
+        String html = readUtf8(REPORT_TEMPLATE).replace(D3_PLACEHOLDER, d3);
+        return json == null ? html : html.replace(BUILD_DATA_PLACEHOLDER, json);
+    }
+
+    /**
+     * Rejects text that would end the enclosing {@code <script>} element early or change how the HTML parser
+     * reads it.
+     */
+    static String requireInlineable(String script, String resource) {
+        String lowerCase = script.toLowerCase(Locale.ROOT);
+        for (String token : new String[]{"</script", "<script", "<!--"}) {
+            if (lowerCase.contains(token)) {
+                throw new IllegalStateException(String.format(
+                    "Resource [%s] contains [%s] and cannot be inlined into a <script> element", resource, token));
+            }
+        }
+        return script;
+    }
+
+    private static String readUtf8(String resource) {
+        return new String(ClasspathResources.readBytes(resource), StandardCharsets.UTF_8);
     }
 }
