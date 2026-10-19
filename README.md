@@ -18,6 +18,9 @@ The report is generated at `target/timeline/build-report.html` under the root pr
 with the build data and the [D3.js](https://d3js.org/) chart library inlined, so viewing it needs no network access.
 The report uses inline scripts, so a Content Security Policy must allow them for the report to render.
 
+**Privacy:** all collected data stays local. The extension does not send any telemetry or build data anywhere — it
+only writes the report files under `target/timeline/`, and the report itself makes no network requests.
+
 To set up the extension add to `.mvn/extensions.xml` in the root of the project
 ```xml
 <extensions>
