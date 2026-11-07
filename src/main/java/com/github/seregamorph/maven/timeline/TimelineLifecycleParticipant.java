@@ -55,7 +55,8 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
     public void afterSessionStart(MavenSession session) {
         // Implementation notice: this method is called once in CLI execution, once in Maven execution via IDEA
         // (specifies "idea.version" property) and once in IDEA import (IDEA also specifies "idea.version" and
-        // "idea.maven.embedder.version" properties)
+        // "idea.maven.embedder.version" properties).
+        // But it is NOT executed if the extension is defined via <build><extensions> in pom.xml
         if (IdeaImportSupport.isIdeaImport(session)) {
             // Skip init as the afterSessionEnd(MavenSession) is never called,
             // so should not start the daemon threads
@@ -70,13 +71,15 @@ public class TimelineLifecycleParticipant extends AbstractMavenLifecycleParticip
     public void afterProjectsRead(MavenSession session) {
         // Implementation notice: this method is called once in CLI execution with the whole set of modules,
         // same for run Maven from IDEA (specifies "idea.version" property), but
-        // runs once PER EACH module during the IDEA import
+        // runs once PER EACH module during the IDEA import.
+        // It is also executed if the extension is defined via <build><extensions> in pom.xml
     }
 
     @Override
     public void afterSessionEnd(MavenSession session) {
         // Implementation notice: this method is called once in CLI execution, same while running Maven from IDEA
         // and never during the IDEA reimport
+        // It is also executed if the extension is defined via <build><extensions> in pom.xml
         if (!timelineHelper.isInitialized()) {
             // Return to reinsure avoiding failure
             return;
